@@ -24,7 +24,7 @@ WorkingDirectory=<WD>
 # The command to start Puma. This variant uses a binstub generated via
 # `bundle binstubs puma --path ./sbin` in the WorkingDirectory
 # (replace "<WD>" below)
-ExecStart=<WD>/sbin/puma -b unix://<WD>/tmp/sockets/puma.sock 
+ExecStart=<WD>/sbin/puma --environment production -b unix://<WD>/tmp/sockets/puma.sock 
 
 # Variant: Use config file with `bind` directives instead:
 # ExecStart=<WD>/sbin/puma -C config.rb
