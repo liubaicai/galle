@@ -10,14 +10,14 @@ if (User.count==0)
 
     userAdmin = User.new
     userAdmin.username = 'admin'
-    userAdmin.password_digest = BCrypt::Password.create(Digest::MD5.hexdigest('admin'))
+    userAdmin.password_digest = Digest::MD5.hexdigest(Digest::MD5.hexdigest('admin'))
     userAdmin.level = 999
     # userAdmin.regenerate_auth_token
     userAdmin.save
 
     userStd = User.new
     userStd.username = 'user'
-    userStd.password_digest = BCrypt::Password.create(Digest::MD5.hexdigest('user'))
+    userStd.password_digest = Digest::MD5.hexdigest(Digest::MD5.hexdigest('user'))
     userStd.level = 1
     userStd.save
     

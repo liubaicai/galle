@@ -1,0 +1,8 @@
+<h1>User#login</h1>
+<p>Find me in app/views/user/login.html.erb</p>
+error:<%= @error %><br>
+<%= form_tag('/user/login', method: 'post') do %>
+  username:<%= text_field_tag(:username) %><br>
+  password:<%= text_field_tag(:password) %><br>
+  <%= submit_tag('submit') %>
+<% end %>
