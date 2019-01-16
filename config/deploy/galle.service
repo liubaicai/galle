@@ -24,7 +24,7 @@ WorkingDirectory=<WD>
 # The command to start Puma. This variant uses a binstub generated via
 # `bundle binstubs puma --path ./sbin` in the WorkingDirectory
 # (replace "<WD>" below)
-ExecStart=<WD>/sbin/puma --environment production -b unix://<WD>/tmp/sockets/puma.sock 
+ExecStart=/home/mac/.rvm/bin/rvm use default do ruby <WD>/sbin/puma --environment production -b unix://<WD>/tmp/sockets/puma.sock 
 
 # Variant: Use config file with `bind` directives instead:
 # ExecStart=<WD>/sbin/puma -C config.rb
