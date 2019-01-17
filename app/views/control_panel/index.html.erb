@@ -1,10 +1,34 @@
-<h1>ControlPanel#index</h1>
-<p>Find me in app/views/control_panel/index.html.erb</p>
-hi, <%= @current_user.username %>!
-<%= form_tag('/users/logout', method: 'post') do %>
-  <%= submit_tag('logout') %>
-<% end %>
-<p><%= @status %></p>
-<p><%= @local_cpu_usage %></p>
-<a href="/servers">服务器列表</a><br>
-<a href="/projects">项目列表</a>
+<div id="app">
+    <h1>ControlPanel#index</h1>
+    <p>Find me in app/views/control_panel/index.html.erb</p>
+    hi, <%= @current_user.username %>!
+    <%= form_tag('/users/logout', method: 'post') do %>
+        <%= submit_tag('logout') %>
+    <% end %>
+    <p><%= @status %></p>
+    <p>cpu占用率: {{ cpu }}%</p>
+    <a href="/servers">服务器列表</a><br>
+    <a href="/projects">项目列表</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-resource/dist/vue-resource.js"></script>
+<script>
+var app = new Vue({
+    el: '#app',
+    data: {
+        cpu: '0'
+    },
+    created: function () {
+        let that = this
+        this.$http.get('/status/cpu').then(function(res){
+            that.cpu = res.data
+        })
+        setInterval( () => {
+            this.$http.get('/status/cpu').then(function(res){
+                that.cpu = res.data
+            })
+        }, 10000)
+    }
+})
+</script>

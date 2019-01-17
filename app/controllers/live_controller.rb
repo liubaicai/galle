@@ -45,31 +45,45 @@ class LiveController < ApplicationController
         FileUtils.mkdir_p(localStorePath)
         FileUtils.cd(localStorePath)
 
-        if Dir.exist?('.git')
-            git = Git.open('.')
-            if project.git_url == git.remotes.first.url
+        begin
 
-                response.live_push "git fetch ..."
-                do_shell("git fetch")
-
-                response.live_push "git reset ..."
-                do_shell("git reset --hard")
-
-                response.live_push "git pull ..."
-                do_shell("git pull")
-            
-                response.live_push "git checkout #{project.git_version} ..."
-                do_shell("git checkout #{project.git_version}")
-
-            else
+            response.live_push "#{project.task_pre_checkout} ..."
+            do_shell(project.task_pre_checkout)
+    
+            if Dir.exist?('.git')
+                git = Git.open('.')
+                if project.git_url == git.remotes.first.url
+    
+                    response.live_push "git fetch ..."
+                    do_shell("git fetch")
+    
+                    response.live_push "git reset ..."
+                    do_shell("git reset --hard")
+    
+                    response.live_push "git pull ..."
+                    do_shell("git pull")
                 
-                response.live_push "delete old repo ..."
-
-                FileUtils.cd("..")
-                FileUtils.rm_rf(localStorePath)
-                FileUtils.mkdir_p(localStorePath)
-                FileUtils.cd(localStorePath)
-
+                    response.live_push "git checkout #{project.git_version} ..."
+                    do_shell("git checkout #{project.git_version}")
+    
+                else
+                    
+                    response.live_push "delete old repo ..."
+    
+                    FileUtils.cd("..")
+                    FileUtils.rm_rf(localStorePath)
+                    FileUtils.mkdir_p(localStorePath)
+                    FileUtils.cd(localStorePath)
+    
+                    response.live_push "git clone #{project.git_url} ..."
+                    do_shell("git clone #{project.git_url} .")
+                    
+                    response.live_push "git checkout #{project.git_version} ..."
+                    do_shell("git checkout #{project.git_version}")
+        
+                end
+            else
+    
                 response.live_push "git clone #{project.git_url} ..."
                 do_shell("git clone #{project.git_url} .")
                 
@@ -77,14 +91,12 @@ class LiveController < ApplicationController
                 do_shell("git checkout #{project.git_version}")
     
             end
-        else
+    
+            response.live_push "#{project.task_post_checkout} ..."
+            do_shell(project.task_post_checkout)
 
-            response.live_push "git clone #{project.git_url} ..."
-            do_shell("git clone #{project.git_url} .")
-            
-            response.live_push "git checkout #{project.git_version} ..."
-            do_shell("git checkout #{project.git_version}")
-
+        rescue => exception
+            response.live_push "#{exception.to_s} ..."
         end
 
         response.live_push "checkout completed"
@@ -95,10 +107,12 @@ class LiveController < ApplicationController
 
     private
     def do_shell commondStr
-        IO.popen(commondStr) do |process|
-            while !process.eof?
-                line = process.gets
-                response.live_push line
+        unless commondStr.nil? || commondStr == ""
+            IO.popen(commondStr) do |process|
+                while !process.eof?
+                    line = process.gets
+                    response.live_push line
+                end
             end
         end
     end
