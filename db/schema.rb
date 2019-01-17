@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_16_083329) do
+ActiveRecord::Schema.define(version: 2019_01_17_033907) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
@@ -20,13 +20,19 @@ ActiveRecord::Schema.define(version: 2019_01_16_083329) do
     t.index ["user_id"], name: "index_logs_on_user_id"
   end
 
+  create_table "project_extend_files", force: :cascade do |t|
+    t.string "filename"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "title"
     t.string "description"
     t.string "git_url"
     t.string "git_version"
     t.string "file_excludable"
-    t.string "file_added"
     t.string "local_store_path"
     t.string "target_deploy_path"
     t.string "target_backup_path"
