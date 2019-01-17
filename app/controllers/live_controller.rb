@@ -32,14 +32,74 @@ class LiveController < ApplicationController
         response.stream.close
     end
 
-    def check_project
+    def checkout_project
         response.live_header
 
-        
+        project_id = params[:id]
+        project = Project.find(project_id)
 
+        localRootPath = Rails.root.to_s
+
+        FileUtils.cd(localRootPath)
+        localStorePath = "#{localRootPath}/tmp/store/#{project.id}"
+        FileUtils.mkdir_p(localStorePath)
+        FileUtils.cd(localStorePath)
+
+        if Dir.exist?('.git')
+            git = Git.open('.')
+            if project.git_url == git.remotes.first.url
+
+                response.live_push "git fetch ..."
+                do_shell("git fetch")
+
+                response.live_push "git reset ..."
+                do_shell("git reset --hard")
+
+                response.live_push "git pull ..."
+                do_shell("git pull")
+            
+                response.live_push "git checkout #{project.git_version} ..."
+                do_shell("git checkout #{project.git_version}")
+
+            else
+                
+                response.live_push "delete old repo ..."
+
+                FileUtils.cd("..")
+                FileUtils.rm_rf(localStorePath)
+                FileUtils.mkdir_p(localStorePath)
+                FileUtils.cd(localStorePath)
+
+                response.live_push "git clone #{project.git_url} ..."
+                do_shell("git clone #{project.git_url} .")
+                
+                response.live_push "git checkout #{project.git_version} ..."
+                do_shell("git checkout #{project.git_version}")
+    
+            end
+        else
+
+            response.live_push "git clone #{project.git_url} ..."
+            do_shell("git clone #{project.git_url} .")
+            
+            response.live_push "git checkout #{project.git_version} ..."
+            do_shell("git checkout #{project.git_version}")
+
+        end
+
+        response.live_push "checkout completed"
         response.live_close
     ensure
         response.stream.close
     end
 
+    private
+    def do_shell commondStr
+        IO.popen(commondStr) do |process|
+            while !process.eof?
+                line = process.gets
+                response.live_push line
+            end
+        end
+    end
 end

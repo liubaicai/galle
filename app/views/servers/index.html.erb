@@ -2,7 +2,7 @@ Servers
 <ul>
     <% @servers.each do |server| %>
         <li><%= server.address %>:<%= server.port %>
-        <button type="button" onclick="CheckServer(<%= server.id %>)">测试</button>
+        <button type="button" onclick="CheckServer(<%= server.id %>)">测试连接</button>
         <%= link_to '编辑', edit_server_path(server) %>
         <%= link_to '删除', server_path(server),
               method: :delete,

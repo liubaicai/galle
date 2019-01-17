@@ -2,7 +2,7 @@ Projects
 <ul>
     <% @projects.each do |project| %>
         <li><%= project.title %>
-        <button type="button" onclick="CheckProject(<%= project.id %>)">测试</button>
+        <button type="button" onclick="CheckProject(<%= project.id %>)">检出代码</button>
         <%= link_to '查看', project_path(project) %>
         <%= link_to '编辑', edit_project_path(project) %>
         <%= link_to '删除', project_path(project),
@@ -17,7 +17,7 @@ Projects
 
 <script>
 function CheckProject (id) {
-    var source = new EventSource("/live/checkproject?id="+id);
+    var source = new EventSource("/live/checkoutproject?id="+id);
     source.onmessage = function (e) {
         console.log(e)
         document.getElementById("result").innerHTML+= (e.data+"<br>")

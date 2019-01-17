@@ -10,7 +10,7 @@ Rails.application.routes.draw do
     resources :projects
 
     get 'live/checkserver' => 'live#check_server'
-    get 'live/checkproject' => 'live#check_project'
+    get 'live/checkoutproject' => 'live#checkout_project'
   
 end
   
