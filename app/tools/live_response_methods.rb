@@ -6,8 +6,10 @@ module LiveResponseMethods
     end
 
     def live_push data
-        self.stream.write "data:#{data}"
-        self.stream.write "\n\n"
+        data.split("\n") do |d|
+            self.stream.write "data:#{d}"
+            self.stream.write "\n\n"
+        end
     end
 
     def live_close
