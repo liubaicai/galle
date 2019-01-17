@@ -1,0 +1,16 @@
+Edit Project
+<%= form_for @project, url: {action: "update"} do |f| %>
+    title:<%= f.text_field :title %><br>
+    description:<%= f.text_field :description %><br>
+    git_url:<%= f.text_field :git_url %><br>
+    git_version:<%= f.text_field :git_version %><br>
+    file_excludable:<%= f.text_field :file_excludable %><br>
+    local_store_path:<%= f.text_field :local_store_path %><br>
+    target_deploy_path:<%= f.text_field :target_deploy_path %><br>
+    target_backup_path:<%= f.text_field :target_backup_path %><br>
+    task_pre_checkout:<%= f.text_field :task_pre_checkout %><br>
+    task_post_checkout:<%= f.text_field :task_post_checkout %><br>
+    task_pre_deploy:<%= f.text_field :task_pre_deploy %><br>
+    task_post_deploy:<%= f.text_field :task_post_deploy %><br>
+    <%= f.submit "submit" %>
+<% end %>

@@ -1,0 +1,33 @@
+Projects
+<ul>
+    <% @projects.each do |project| %>
+        <li><%= project.title %>
+        <button type="button" onclick="CheckProject(<%= project.id %>)">测试</button>
+        <%= link_to '查看', project_path(project) %>
+        <%= link_to '编辑', edit_project_path(project) %>
+        <%= link_to '删除', project_path(project),
+              method: :delete,
+              data: { confirm: 'Are you sure?' } %></li>
+    <% end %>
+</ul>
+<%= link_to '回到主页', root_path %>
+<%= link_to '新建', new_project_path %>
+
+<div id="result"></div>
+
+<script>
+function CheckProject (id) {
+    var source = new EventSource("/live/checkproject?id="+id);
+    source.onmessage = function (e) {
+        console.log(e)
+        document.getElementById("result").innerHTML+= (e.data+"<br>")
+    }
+    source.onopen = function () {
+        console.log("Server open")
+    }
+    source.addEventListener("close", function (e) {
+        source.close()
+        console.log("Server close")
+    }, false)
+}
+</script>

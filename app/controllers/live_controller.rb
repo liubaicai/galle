@@ -32,4 +32,14 @@ class LiveController < ApplicationController
         response.stream.close
     end
 
+    def check_project
+        response.live_header
+
+        
+
+        response.live_close
+    ensure
+        response.stream.close
+    end
+
 end

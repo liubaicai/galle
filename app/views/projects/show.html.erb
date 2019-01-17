@@ -1,0 +1,15 @@
+Show Project<br>
+title: <%= @project.title %><br>
+description: <%= @project.description %><br>
+git_url: <%= @project.git_url %><br>
+git_version: <%= @project.git_version %><br>
+file_excludable: <%= @project.file_excludable %><br>
+local_store_path: <%= @project.local_store_path %><br>
+target_deploy_path: <%= @project.target_deploy_path %><br>
+target_backup_path: <%= @project.target_backup_path %><br>
+task_pre_checkout: <%= @project.task_pre_checkout %><br>
+task_post_checkout: <%= @project.task_post_checkout %><br>
+task_pre_deploy: <%= @project.task_pre_deploy %><br>
+task_post_deploy: <%= @project.task_post_deploy %><br>
+
+<%= link_to '返回列表', projects_path %>

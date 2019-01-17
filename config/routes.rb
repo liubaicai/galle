@@ -7,8 +7,10 @@ Rails.application.routes.draw do
     post 'users/logout' => 'users#logout_post'
     
     resources :servers
+    resources :projects
 
     get 'live/checkserver' => 'live#check_server'
+    get 'live/checkproject' => 'live#check_project'
   
 end
   
