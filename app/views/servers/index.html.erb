@@ -16,7 +16,7 @@ Servers
 
 <script>
 function CheckServer (id) {
-    var source = new EventSource("/live/checkserver");
+    var source = new EventSource("/live/checkserver?id="+id);
     source.onmessage = function (e) {
         console.log(e)
         document.getElementById("result").innerHTML+= (e.data+"<br>")
