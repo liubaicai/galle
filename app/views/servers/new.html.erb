@@ -1,0 +1,9 @@
+New Server
+<%= form_for @server, url: {action: "create"} do |f| %>
+  address:<%= f.text_field :address %><br>
+  port:<%= f.text_field :port %><br>
+  username:<%= f.text_field :username %><br>
+  password:<%= f.text_field :password %><br>
+  monitor_path:<%= f.text_field :monitor_path %><br>
+  <%= f.submit "submit" %>
+<% end %>

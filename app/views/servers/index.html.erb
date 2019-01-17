@@ -1,0 +1,12 @@
+Servers
+<ul>
+    <% @servers.each do |server| %>
+        <li><%= server.address %>:<%= server.port %>
+        <%= link_to '编辑', edit_server_path(server) %>
+        <%= link_to '删除', server_path(server),
+              method: :delete,
+              data: { confirm: 'Are you sure?' } %></li>
+    <% end %>
+</ul>
+ <%= link_to '回到主页', root_path %>
+ <%= link_to '新建', new_server_path %>
