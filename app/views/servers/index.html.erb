@@ -2,11 +2,31 @@ Servers
 <ul>
     <% @servers.each do |server| %>
         <li><%= server.address %>:<%= server.port %>
+        <button type="button" onclick="CheckServer(<%= server.id %>)">测试</button>
         <%= link_to '编辑', edit_server_path(server) %>
         <%= link_to '删除', server_path(server),
               method: :delete,
               data: { confirm: 'Are you sure?' } %></li>
     <% end %>
 </ul>
- <%= link_to '回到主页', root_path %>
- <%= link_to '新建', new_server_path %>
+<%= link_to '回到主页', root_path %>
+<%= link_to '新建', new_server_path %>
+
+<div id="result"></div>
+
+<script>
+function CheckServer (id) {
+    var source = new EventSource("/live/checkserver");
+    source.onmessage = function (e) {
+        console.log(e)
+        document.getElementById("result").innerHTML+= (e.data+"<br>")
+    }
+    source.onopen = function () {
+        console.log("Server open")
+    }
+    source.addEventListener("close", function (e) {
+        source.close()
+        console.log("Server close")
+    }, false)
+}
+</script>
