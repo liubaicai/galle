@@ -2,25 +2,52 @@
 module Machine
 
     def self.status
-        return {
-            :system => {
-                :distribution => System.distribution,
-                :description => System.description,
-                :release => System.release,
-                :kernel => System.kernel
-            },
-            :cpu => {
-                :model => CPU.model,
-                :number => CPU.number,
-                :cores => CPU.cores,
-                :siblings => CPU.siblings,
-                :mhz => CPU.MHz
-            },
-            :memory => {
-                :mem => Memory::Mem.total,
-                :swap => Memory::Swap.total
+        type = ''
+        begin
+            type = Machine.commond('uname')
+        rescue => exception
+        end
+        if type == 'Linux'
+            return {
+                :system => {
+                    :distribution => System.distribution,
+                    :description => System.description,
+                    :release => System.release,
+                    :kernel => System.kernel
+                },
+                :cpu => {
+                    :model => CPU.model,
+                    :number => CPU.number,
+                    :cores => CPU.cores,
+                    :siblings => CPU.siblings,
+                    :mhz => CPU.MHz
+                },
+                :memory => {
+                    :mem => Memory::Mem.total,
+                    :swap => Memory::Swap.total
+                }
             }
-        }
+        else
+            return {
+                :system => {
+                    :distribution => type,
+                    :description => type,
+                    :release => type,
+                    :kernel => type
+                },
+                :cpu => {
+                    :model => '',
+                    :number => '',
+                    :cores => '',
+                    :siblings => '',
+                    :mhz => ''
+                },
+                :memory => {
+                    :mem => '0',
+                    :swap => '0'
+                }
+            }
+        end
     end
 
     def self.memory
@@ -41,11 +68,15 @@ module Machine
 
     def self.commond commondStr
         result = ''
-        IO.popen(commondStr) do |process|
-            while !process.eof?
-                line = process.gets
-                result += "#{line}"
+        begin
+            IO.popen(commondStr) do |process|
+                while !process.eof?
+                    line = process.gets
+                    result += "#{line}"
+                end
             end
+        rescue => exception
+            result = exception.to_s
         end
         result
     end
