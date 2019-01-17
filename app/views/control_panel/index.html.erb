@@ -5,8 +5,9 @@
     <%= form_tag('/users/logout', method: 'post') do %>
         <%= submit_tag('logout') %>
     <% end %>
-    <p><%= @status %></p>
-    <p>cpu占用率: {{ cpu }}%</p>
+    system: {{ local_server_status.system.description }}<br>
+    cpu: {{ local_server_status.cpu.model }}<br>
+    memory: {{ (parseInt(local_server_status.memory.mem)/1073741824).toFixed(2) }}G<br>
     <a href="/servers">服务器列表</a><br>
     <a href="/projects">项目列表</a>
 </div>
@@ -17,18 +18,18 @@
 var app = new Vue({
     el: '#app',
     data: {
-        cpu: '0'
+        local_server_status: <%== @local_server_status %>
     },
     created: function () {
-        let that = this
-        this.$http.get('/status/cpu').then(function(res){
-            that.cpu = res.data
-        })
-        setInterval( () => {
-            this.$http.get('/status/cpu').then(function(res){
-                that.cpu = res.data
-            })
-        }, 10000)
+        //let that = this
+        //this.$http.get('/status/cpu').then(function(res){
+        //    that.cpu = res.data
+        //})
+        //setInterval( () => {
+        //    this.$http.get('/status/cpu').then(function(res){
+        //        that.cpu = res.data
+        //    })
+        //}, 10000)
     }
 })
 </script>

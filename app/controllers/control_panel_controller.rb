@@ -1,6 +1,6 @@
 class ControlPanelController < ApplicationController
     def index
-        @status = Machine.status.to_json
+        @local_server_status = Machine.status.to_json
     end
 end
   
