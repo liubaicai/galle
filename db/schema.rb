@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_17_033907) do
+ActiveRecord::Schema.define(version: 2019_01_17_105802) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
@@ -25,6 +25,8 @@ ActiveRecord::Schema.define(version: 2019_01_17_033907) do
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "project_id"
+    t.index ["project_id"], name: "index_project_extend_files_on_project_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -59,6 +61,7 @@ ActiveRecord::Schema.define(version: 2019_01_17_033907) do
     t.integer "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "published", default: false
     t.index ["project_id"], name: "index_publishers_on_project_id"
   end
 
