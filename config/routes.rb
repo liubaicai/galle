@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resources :servers
     resources :projects
     resources :publishers
+    resources :project_extend_files
 
     get 'status/cpu'
 

@@ -1,0 +1,7 @@
+new ExtendFile<br>
+<%= form_for [@project, @project.project_extend_files.build], url: {action: "create"} do |f| %>
+  project:<%= f.text_field :project_id %><br>
+  filename:<%= f.text_field :filename %><br>
+  content:<%= f.text_area :content, size: "60x12" %><br>
+  <%= f.submit "submit" %>
+<% end %>

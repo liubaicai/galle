@@ -1,0 +1,8 @@
+edit ExtendFile<br>
+<%= form_for @file, url: {action: "create"} do |f| %>
+  project:<%= f.text_field :project_id %><br>
+  filename:<%= f.text_field :filename %><br>
+  content:<%= f.text_area :content, size: "60x12" %><br>
+  <%= f.submit "submit" %>
+<% end %>
+<%= link_to '取消', project_path(@file.project_id) %>
