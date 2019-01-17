@@ -13,8 +13,8 @@ class LiveController < ApplicationController
         response.live_push "Connecting: #{server.address}:#{server.port}"
 
         begin
-            Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password,
-                :timeout => 10, :non_interactive => true) do |ssh|
+            Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
+                ssh.exec!("mkdir -p #{server.monitor_path}")
                 response.live_push "Connected"
             end
         rescue Timeout::Error
