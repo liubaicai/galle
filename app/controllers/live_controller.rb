@@ -136,8 +136,10 @@ class LiveController < ApplicationController
             FileUtils.mkdir_p(localStorePath)
             FileUtils.cd(localStorePath)
             
-            response.live_push "#{project.task_pre_checkout} ..."
-            do_shell(project.task_pre_checkout)
+            response.live_push "task_pre_checkout ..."
+            project.task_pre_checkout.split(';').each do |command|
+                do_shell(command)
+            end
     
             if Dir.exist?('.git')
                 git = Git.open('.')
@@ -151,7 +153,7 @@ class LiveController < ApplicationController
                     do_shell("git clean -df")
     
                     response.live_push "git pull ..."
-                    do_shell("git pull")
+                    do_shell_without_put("git pull")
                 
                     response.live_push "git checkout #{project.git_version} ..."
                     do_shell("git checkout #{project.git_version}")
@@ -182,8 +184,10 @@ class LiveController < ApplicationController
     
             end
     
-            response.live_push "#{project.task_post_checkout} ..."
-            do_shell(project.task_post_checkout)
+            response.live_push "task_post_checkout ..."
+            project.task_post_checkout.split(';').each do |command|
+                do_shell(command)
+            end
 
             response.live_push "checkout completed"
 
@@ -208,9 +212,74 @@ class LiveController < ApplicationController
             publisher.publisher_servers.each do |publisher_server|
                 server = publisher_server.server
                 response.live_push "connecting to: #{server.address}:#{server.port}"
+                begin
+                    response.live_push "task_pre_deploy ..."
+                    unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
+                        Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
+                            project.task_pre_deploy.split(';').each do |command|
+                                ssh.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                    response.live_push data
+                                end
+                            end
+                        end
+                    end
+
+                    response.live_push "ready to deploy ..."
+                    tmpStorePath = "#{localStorePath}.tmp"
+                    if Dir.exist?(tmpStorePath)
+                        FileUtils.rm_rf(tmpStorePath)
+                    end
+                    FileUtils.mkdir_p(tmpStorePath)
+                    Find.find(localStorePath) do |path|
+                        unless path==localStorePath
+                            real_path = path.gsub(localStorePath,'')
+                            FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
+                        end
+                    end
+                    excs = project.file_excludable.split(';')
+                    excs.each do |exc|
+                        excp = "#{tmpStorePath}/#{exc}"
+                        FileUtils.rm_rf(excp)
+                    end
+
+                    Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true)  do |sftp|
+                        sftp.session.exec!("mkdir -p #{project.target_deploy_path}")
+                        sftp.dir.foreach(project.target_deploy_path) do |entry|
+                            if(entry.name!='.' && entry.name!='..')
+                                sftp.session.exec!("rm -rf #{project.target_deploy_path}/#{entry.name}")
+                            end
+                        end
+                        sftp.upload!(tmpStorePath, project.target_deploy_path)
+                    end
+
+
+                    response.live_push "task_post_deploy ..."
+                    unless project.task_post_deploy.nil? || project.task_post_deploy == ""
+                        Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
+                            project.task_post_deploy.split(';').each do |command|
+                                ssh.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                    response.live_push data
+                                end
+                            end
+                        end
+                    end
+                rescue Timeout::Error
+                    response.live_push "Timed out"
+                rescue Errno::EHOSTUNREACH
+                    response.live_push "Host unreachable"
+                rescue Errno::ECONNREFUSED
+                    response.live_push "Connection refused"
+                rescue Net::SSH::AuthenticationFailed
+                    response.live_push "Authentication failure"
+                rescue Net::SFTP::StatusException => exception
+                    response.live_push "StatusException: #{exception.description};#{exception.response}"
+                rescue => exception
+                    response.live_push "#{exception.to_s}"
+                end
+                
             end
 
-
+            response.live_push "publish completed"
         rescue => exception
             response.live_push "#{exception.to_s} ..."
         end
@@ -229,6 +298,16 @@ class LiveController < ApplicationController
                 while !process.eof?
                     line = process.gets
                     response.live_push line
+                end
+            end
+        end
+    end
+    def do_shell_without_put commondStr
+        unless commondStr.nil? || commondStr == ""
+            IO.popen(commondStr) do |process|
+                while !process.eof?
+                    line = process.gets
+                    puts line
                 end
             end
         end
