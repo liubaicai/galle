@@ -122,6 +122,13 @@ class LiveController < ApplicationController
 
         publisher_id = params[:id]
         publisher = Publisher.find(publisher_id)
+
+        if publisher.published
+            response.live_push "has published"
+            response.live_close
+            return
+        end
+
         project = publisher.project
 
         while Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
@@ -275,6 +282,10 @@ class LiveController < ApplicationController
                 end
                 
             end
+
+            publisher.published = true
+            publisher.publish_time = Time.now
+            publisher.save
 
             response.live_push "publish completed"
         rescue => exception

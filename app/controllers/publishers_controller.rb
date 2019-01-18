@@ -14,11 +14,13 @@ class PublishersController < ApplicationController
         publisher = Publisher.new(publisher_params)
         publisher.save
         publisher_servers = params[:publisher_servers]
-        publisher_servers.each do |server_id|
-            publisher_server = PublisherServer.new
-            publisher_server.server_id = server_id
-            publisher_server.publisher_id = publisher.id
-            publisher_server.save
+        unless publisher_servers.nil?
+            publisher_servers.each do |server_id|
+                publisher_server = PublisherServer.new
+                publisher_server.server_id = server_id
+                publisher_server.publisher_id = publisher.id
+                publisher_server.save
+            end
         end
         redirect_to publishers_path
     end

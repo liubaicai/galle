@@ -4,6 +4,7 @@ Publishers
         <li>
             <%= publisher.title %>
             <input type="checkbox" disabled <% if publisher.published %>checked<% end %> > 
+            <% if publisher.published %>publishtime: <%= publisher.publish_time.to_s %><% end %>
         </li>
         <% publisher.publisher_servers.each do |server| %>
             <li>发布到: <%= server.server.address %>:<%= server.server.port %></li>
