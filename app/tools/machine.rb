@@ -4,7 +4,7 @@ module Machine
     def self.status
         type = ''
         begin
-            type = Machine.commond('uname')
+            type = Machine.commond('uname').delete("\n")
         rescue => exception
         end
         if type == 'Linux'

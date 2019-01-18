@@ -38,6 +38,13 @@ class LiveController < ApplicationController
         project_id = params[:id]
         project = Project.find(project_id)
 
+        while Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
+            response.live_push "等待其他任务完成 ..."
+            sleep 3
+        end
+
+        Rails.cache.write('local_shell_running', true)
+
         localRootPath = Rails.root.to_s
 
         FileUtils.cd(localRootPath)
@@ -101,8 +108,11 @@ class LiveController < ApplicationController
 
         response.live_push "checkout completed"
         response.live_close
+
+        Rails.cache.write('local_shell_running', false)
     ensure
         response.stream.close
+        Rails.cache.write('local_shell_running', false)
     end
 
     private
