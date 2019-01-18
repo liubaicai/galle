@@ -23,6 +23,8 @@ class LiveController < ApplicationController
             response.live_push "Host unreachable"
         rescue Errno::ECONNREFUSED
             response.live_push "Connection refused"
+        rescue Errno::EALREADY 
+            response.live_push "Connection refused(Operation already in progress)"
         rescue Net::SSH::AuthenticationFailed
             response.live_push "Authentication failure"
         rescue => exception
