@@ -1,4 +1,4 @@
-Projects
+
 <ul>
     <% @projects.each do |project| %>
         <li><%= project.title %>
@@ -12,7 +12,6 @@ Projects
         </li>
     <% end %>
 </ul>
-<%= link_to '回到主页', root_path %>
 <%= link_to '新建', new_project_path %>
 
 <div id="result"></div>

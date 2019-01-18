@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     root 'control_panel#index'
 
     get 'users/login'
+    get 'users/logout'
     post 'users/login' => 'users#login_post'
     post 'users/logout' => 'users#logout_post'
     

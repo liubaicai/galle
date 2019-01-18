@@ -1,4 +1,4 @@
-Servers
+
 <ul>
     <% @servers.each do |server| %>
         <li><%= server.address %>:<%= server.port %>
@@ -9,7 +9,6 @@ Servers
               data: { confirm: 'Are you sure?' } %></li>
     <% end %>
 </ul>
-<%= link_to '回到主页', root_path %>
 <%= link_to '新建', new_server_path %>
 
 <div id="result"></div>

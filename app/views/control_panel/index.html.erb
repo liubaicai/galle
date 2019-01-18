@@ -1,23 +1,63 @@
+
+<style>
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+        opacity: 0
+    }
+</style>
+
 <div id="app">
-    <h1>ControlPanel#index</h1>
-    <p>Find me in app/views/control_panel/index.html.erb</p>
-    hi, <%= @current_user.username %>!
-    <%= form_tag('/users/logout', method: 'post') do %>
-        <%= submit_tag('logout') %>
-    <% end %>
-    system: {{ local_server_status.system.description }}<br>
-    cpu: {{ local_server_status.cpu.model }}<br>
-    memory: {{ (parseInt(local_server_status.memory.mem)/1073741824).toFixed(2) }}G<br>
-    <a href="/servers">服务器列表</a><br>
-    <a href="/projects">项目列表</a><br>
-    <a href="/publishers">发布列表</a><br>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <%= link_to 'Galle', root_path, class: "navbar-brand" %>
+                <div v-if="is_show_jumbotron===false" class="navbar-text">a project deployment platform</div>
+            </div>
+            <% unless @current_user.nil? %>
+                <div class="navbar-collapse">
+                    <p class="navbar-text navbar-right">
+                        Signed in as <%= @current_user.username %>, <a href="/users/logout" class="navbar-link">注销</a>
+                    </p>
+                </div>
+            <% end %>
+        </div>
+    </nav>
+    <transition name="fade">
+        <div v-if="is_show_jumbotron" class="jumbotron">
+            <h1>Galle</h1>
+            <p>A project deployment platform </p>
+        </div>
+    </transition>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            system: {{ local_server_status.system.description }} | {{ local_server_status.cpu.model }} | 
+            {{ (parseInt(local_server_status.memory.mem)/1073741824).toFixed(2) }}G
+        </div>
+    </div>
+    <div>
+        <ul class="nav nav-pills nav-stacked col-md-4">
+            <li role="presentation" :class="project_nav_class"><a @click="childFrameLoad('/projects');project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目列表</a></li>
+            <li role="presentation" :class="server_nav_class"><a @click="childFrameLoad('/servers');project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器列表</a></li>
+            <li role="presentation" :class="publisher_nav_class"><a @click="childFrameLoad('/publishers');project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布列表</a></li>
+        </ul>
+        <div id="childframe" class="embed-responsive embed-responsive-4by3">
+            <iframe class="embed-responsive-item" :src="child_frame_src"></iframe>
+        </div>
+    </div>
 </div>
 
 <script>
 var app = new Vue({
     el: '#app',
     data: {
-        local_server_status: <%== @local_server_status %>
+        is_show_jumbotron: true,
+        local_server_status: <%== @local_server_status %>,
+        child_frame_src: '/projects',
+        project_nav_class: 'active',
+        server_nav_class: '',
+        publisher_nav_class: '',
     },
     created: function () {
         //let that = this
@@ -29,6 +69,14 @@ var app = new Vue({
         //        that.cpu = res.data
         //    })
         //}, 10000)
+        setTimeout(() => { 
+            this.is_show_jumbotron = false
+        }, 1000)
+    },
+    methods: {
+        childFrameLoad: function (src) {
+            this.child_frame_src = src
+        }
     }
 })
 </script>

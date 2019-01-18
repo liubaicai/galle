@@ -22,9 +22,14 @@ class UsersController < ApplicationController
         end
     end
   
+    def logout
+        cookies.delete(:user_auth_token)
+        redirect_to users_login_path
+    end
+  
     def logout_post
         cookies.delete(:user_auth_token)
-        render "login" 
+        redirect_to users_login_path
     end
   
 end
