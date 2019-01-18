@@ -25,6 +25,8 @@ class LiveController < ApplicationController
             response.live_push "Connection refused"
         rescue Net::SSH::AuthenticationFailed
             response.live_push "Authentication failure"
+        rescue => exception
+            response.live_push "#{exception.to_s} ..."
         end
 
         response.live_close
@@ -213,36 +215,34 @@ class LiveController < ApplicationController
                 server = publisher_server.server
                 response.live_push "connecting to: #{server.address}:#{server.port}"
                 begin
-                    response.live_push "task_pre_deploy ..."
-                    unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
-                        Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
+                    Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true)  do |sftp|
+                        response.live_push "task_pre_deploy ..."
+                        unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
                             project.task_pre_deploy.split(';').each do |command|
-                                ssh.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
                                     response.live_push data
                                 end
                             end
                         end
-                    end
 
-                    response.live_push "ready to deploy ..."
-                    tmpStorePath = "#{localStorePath}.tmp"
-                    if Dir.exist?(tmpStorePath)
-                        FileUtils.rm_rf(tmpStorePath)
-                    end
-                    FileUtils.mkdir_p(tmpStorePath)
-                    Find.find(localStorePath) do |path|
-                        unless path==localStorePath
-                            real_path = path.gsub(localStorePath,'')
-                            FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
+                        response.live_push "ready to deploy ..."
+                        tmpStorePath = "#{localStorePath}.tmp"
+                        if Dir.exist?(tmpStorePath)
+                            FileUtils.rm_rf(tmpStorePath)
                         end
-                    end
-                    excs = project.file_excludable.split(';')
-                    excs.each do |exc|
-                        excp = "#{tmpStorePath}/#{exc}"
-                        FileUtils.rm_rf(excp)
-                    end
+                        FileUtils.mkdir_p(tmpStorePath)
+                        Find.find(localStorePath) do |path|
+                            unless path==localStorePath
+                                real_path = path.gsub(localStorePath,'')
+                                FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
+                            end
+                        end
+                        excs = project.file_excludable.split(';')
+                        excs.each do |exc|
+                            excp = "#{tmpStorePath}/#{exc}"
+                            FileUtils.rm_rf(excp)
+                        end
 
-                    Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true)  do |sftp|
                         sftp.session.exec!("mkdir -p #{project.target_deploy_path}")
                         sftp.dir.foreach(project.target_deploy_path) do |entry|
                             if(entry.name!='.' && entry.name!='..')
@@ -250,14 +250,11 @@ class LiveController < ApplicationController
                             end
                         end
                         sftp.upload!(tmpStorePath, project.target_deploy_path)
-                    end
 
-
-                    response.live_push "task_post_deploy ..."
-                    unless project.task_post_deploy.nil? || project.task_post_deploy == ""
-                        Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
+                        response.live_push "task_post_deploy ..."
+                        unless project.task_post_deploy.nil? || project.task_post_deploy == ""
                             project.task_post_deploy.split(';').each do |command|
-                                ssh.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
                                     response.live_push data
                                 end
                             end
