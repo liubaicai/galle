@@ -118,8 +118,9 @@ class LiveController < ApplicationController
     def publish_project
         response.live_header
 
-        project_id = params[:id]
-        project = Project.find(project_id)
+        publisher_id = params[:id]
+        publisher = Publisher.find(publisher_id)
+        project = publisher.project
 
         while Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
             response.live_push "等待其他任务完成 ..."
@@ -199,6 +200,14 @@ class LiveController < ApplicationController
                 aFile = File.new(project_extend_file.filename, "w+")
                 aFile.syswrite(project_extend_file.content)
                 aFile.close
+            end
+
+            response.live_push "files ready"
+            response.live_push "publish to "+publisher.publisher_servers.size.to_s+" servers ..."
+
+            publisher.publisher_servers.each do |publisher_server|
+                server = publisher_server.server
+                response.live_push "connecting to: #{server.address}:#{server.port}"
             end
 
 

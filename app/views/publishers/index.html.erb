@@ -1,9 +1,20 @@
 Publishers
 <ul>
     <% @publishers.each do |publisher| %>
-        <li><%= publisher.title %>
-        <input type="checkbox" disabled <% if publisher.published %>checked<% end %> > 
-        <button type="button" onclick="toPublish(<%= publisher.id %>)">发布</button></li>
+        <li>
+            <%= publisher.title %>
+            <input type="checkbox" disabled <% if publisher.published %>checked<% end %> > 
+        </li>
+        <% publisher.publisher_servers.each do |server| %>
+            <li>发布到: <%= server.server.address %>:<%= server.server.port %></li>
+        <% end %>
+        <li>
+            <%= link_to '删除', publisher_path(publisher),
+                method: :delete,
+                data: { confirm: 'Are you sure?' } %>
+            <button type="button" onclick="toPublish(<%= publisher.id %>)">发布</button>
+        </li>
+        <li>===================</li>
     <% end %>
 </ul>
 <%= link_to '回到主页', root_path %>
