@@ -1,0 +1,6 @@
+new Publisher<br>
+<%= form_for [@project, @project.publishers.build], url: {action: "create"} do |f| %>
+  project:<%= f.text_field :project_id %><br>
+  title:<%= f.text_field :title %><br>
+  <%= f.submit "submit" %>
+<% end %>

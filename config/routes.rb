@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
     get 'live/checkserver' => 'live#check_server'
     get 'live/checkoutproject' => 'live#checkout_project'
+    get 'live/publishproject' => 'live#publish_project'
   
 end
   

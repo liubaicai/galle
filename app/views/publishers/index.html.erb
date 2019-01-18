@@ -1,0 +1,28 @@
+Publishers
+<ul>
+    <% @publishers.each do |publisher| %>
+        <li><%= publisher.title %>
+        <input type="checkbox" disabled <% if publisher.published %>checked<% end %> > 
+        <button type="button" onclick="toPublish(<%= publisher.id %>)">发布</button></li>
+    <% end %>
+</ul>
+<%= link_to '回到主页', root_path %>
+
+<div id="result"></div>
+
+<script>
+function toPublish (id) {
+    var source = new EventSource("/live/publishproject?id="+id);
+    source.onmessage = function (e) {
+        console.log(e)
+        document.getElementById("result").innerHTML+= (e.data+"<br>")
+    }
+    source.onopen = function () {
+        console.log("Server open")
+    }
+    source.addEventListener("close", function (e) {
+        source.close()
+        console.log("Server close")
+    }, false)
+}
+</script>

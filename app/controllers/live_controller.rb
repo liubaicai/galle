@@ -115,6 +115,104 @@ class LiveController < ApplicationController
         Rails.cache.write('local_shell_running', false)
     end
 
+    def publish_project
+        response.live_header
+
+        project_id = params[:id]
+        project = Project.find(project_id)
+
+        while Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
+            response.live_push "等待其他任务完成 ..."
+            sleep 3
+        end
+
+        Rails.cache.write('local_shell_running', true)
+
+        begin
+            localRootPath = Rails.root.to_s
+            FileUtils.cd(localRootPath)
+            localStorePath = "#{localRootPath}/tmp/store/#{project.id}"
+            FileUtils.mkdir_p(localStorePath)
+            FileUtils.cd(localStorePath)
+            
+            response.live_push "#{project.task_pre_checkout} ..."
+            do_shell(project.task_pre_checkout)
+    
+            if Dir.exist?('.git')
+                git = Git.open('.')
+                if project.git_url == git.remotes.first.url
+    
+                    response.live_push "git fetch ..."
+                    do_shell("git fetch")
+    
+                    response.live_push "git reset ..."
+                    do_shell("git reset --hard")
+                    do_shell("git clean -df")
+    
+                    response.live_push "git pull ..."
+                    do_shell("git pull")
+                
+                    response.live_push "git checkout #{project.git_version} ..."
+                    do_shell("git checkout #{project.git_version}")
+    
+                else
+                    
+                    response.live_push "delete old repo ..."
+    
+                    FileUtils.cd("..")
+                    FileUtils.rm_rf(localStorePath)
+                    FileUtils.mkdir_p(localStorePath)
+                    FileUtils.cd(localStorePath)
+    
+                    response.live_push "git clone #{project.git_url} ..."
+                    do_shell("git clone #{project.git_url} .")
+                    
+                    response.live_push "git checkout #{project.git_version} ..."
+                    do_shell("git checkout #{project.git_version}")
+        
+                end
+            else
+    
+                response.live_push "git clone #{project.git_url} ..."
+                do_shell("git clone #{project.git_url} .")
+                
+                response.live_push "git checkout #{project.git_version} ..."
+                do_shell("git checkout #{project.git_version}")
+    
+            end
+    
+            response.live_push "#{project.task_post_checkout} ..."
+            do_shell(project.task_post_checkout)
+
+            response.live_push "checkout completed"
+
+            response.live_push "write extendfiles ..."
+            project_extend_files = project.project_extend_files
+            project_extend_files.each do |project_extend_file|
+                tname = project_extend_file.filename
+                tarr = tname.split('/')
+                if tarr.size>1
+                    tarr.delete_at(tarr.size-1)
+                    project_extend_file_path = tarr.join('/')
+                    FileUtils.mkdir_p(project_extend_file_path)
+                end
+                aFile = File.new(project_extend_file.filename, "w+")
+                aFile.syswrite(project_extend_file.content)
+                aFile.close
+            end
+
+
+        rescue => exception
+            response.live_push "#{exception.to_s} ..."
+        end
+
+        response.live_close
+        Rails.cache.write('local_shell_running', false)
+    ensure
+        response.stream.close
+        Rails.cache.write('local_shell_running', false)
+    end
+
     private
     def do_shell commondStr
         unless commondStr.nil? || commondStr == ""
