@@ -1,20 +1,50 @@
 
-<ul>
-    <% @projects.each do |project| %>
-        <li><%= project.title %>
-        <button type="button" onclick="CheckProject(<%= project.id %>)">检出代码</button>
-        <%= link_to '查看', project_path(project) %>
-        <%= link_to '编辑', edit_project_path(project) %>
-        <%= link_to '删除', project_path(project),
-              method: :delete,
-              data: { confirm: 'Are you sure?' } %>
-        <%= link_to '新建发布', new_publisher_path+"?project_id="+project.id.to_s %>
-        </li>
-    <% end %>
-</ul>
-<%= link_to '新建', new_project_path %>
+<style>
+.table tbody tr td{
+    vertical-align: middle;
+}
+.table tbody tr th{
+    vertical-align: middle;
+}
+</style>
 
-<div id="result"></div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Operation</th>
+            <th>Publish</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @projects.each do |project| %>
+        <tr>
+            <th scope="row"><%= project.id %></th>
+            <td><%= project.title %></td>
+            <td>
+                <button type="button" class="btn btn-success" onclick="CheckProject(<%= project.id %>)">检测</button>
+                <%= link_to '查看', project_path(project), type: "button", class: "btn btn-default" %>
+                <%= link_to '编辑', edit_project_path(project), type: "button", class: "btn btn-default" %>
+                <%= link_to '删除', project_path(project), method: :delete, data: { confirm: 'Are you sure?' }, type: "button", class: "btn btn-danger" %>
+            </td>
+            <td><%= link_to '发布', new_publisher_path+"?project_id="+project.id.to_s, type: "button", class: "btn btn-primary" %></td>
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+<div>
+  <%= link_to '新建项目', new_project_path, type: "button", class: "btn btn-primary" %>
+</div>
+
+<br>
+
+<div class="panel panel-default">
+  <div class="panel-heading">服务器响应:</div>
+  <div id="result" class="panel-body">
+    ...
+  </div>
+</div>
 
 <script>
 function CheckProject (id) {

@@ -1,17 +1,53 @@
-New Project
+
 <%= form_for @project, url: {action: "create"} do |f| %>
-    title:<%= f.text_field :title %><br>
-    description:<%= f.text_field :description %><br>
-    git_url:<%= f.text_field :git_url %><br>
-    git_version:<%= f.text_field :git_version %><br>
-    file_excludable:<%= f.text_field :file_excludable %><br>
-    local_store_path:<%= f.text_field :local_store_path %><br>
-    target_deploy_path:<%= f.text_field :target_deploy_path %><br>
-    target_backup_path:<%= f.text_field :target_backup_path %><br>
-    task_pre_checkout:<%= f.text_field :task_pre_checkout %><br>
-    task_post_checkout:<%= f.text_field :task_post_checkout %><br>
-    task_pre_deploy:<%= f.text_field :task_pre_deploy %><br>
-    task_post_deploy:<%= f.text_field :task_post_deploy %><br>
-    <%= f.submit "submit" %>
+    <div class="form-group">
+        <label>Title</label>
+        <%= f.text_field :title, type: "text", class: "form-control", placeholder: "项目名称" %>
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <%= f.text_field :description, type: "text", class: "form-control", placeholder: "项目描述" %>
+    </div>
+    <div class="form-group">
+        <label>Url</label>
+        <%= f.text_field :git_url, type: "text", class: "form-control", placeholder: "Git仓库地址" %>
+    </div>
+    <div class="form-group">
+        <label>Version</label>
+        <%= f.text_field :git_version, type: "text", class: "form-control", placeholder: "项目分支或版本" %>
+    </div>
+    <div class="form-group">
+        <label>ExcludableFiles</label>
+        <%= f.text_field :file_excludable, type: "text", class: "form-control", placeholder: "排除的文件，以;分隔" %>
+    </div>
+    <div class="hidden form-group">
+        <label>LocalStorePath</label>
+        <%= f.text_field :local_store_path, type: "text", class: "form-control", placeholder: "本地临时存储地址" %>
+    </div>
+    <div class="form-group">
+        <label>TargetDeployPath</label>
+        <%= f.text_field :target_deploy_path, type: "text", class: "form-control", placeholder: "目标部署地址" %>
+    </div>
+    <div class="hidden form-group">
+        <label>TargetBackupPath</label>
+        <%= f.text_field :target_backup_path, type: "text", class: "form-control", placeholder: "目标备份地址" %>
+    </div>
+    <div class="form-group">
+        <label>TaskPreCheckout</label>
+        <%= f.text_field :task_pre_checkout, type: "text", class: "form-control", placeholder: "检出前脚本任务，以;分隔" %>
+    </div>
+    <div class="form-group">
+        <label>TaskPostCheckout</label>
+        <%= f.text_field :task_post_checkout, type: "text", class: "form-control", placeholder: "检出后脚本任务，以;分隔" %>
+    </div>
+    <div class="form-group">
+        <label>TaskPreDeploy</label>
+        <%= f.text_field :task_pre_deploy, type: "text", class: "form-control", placeholder: "部署前脚本任务，以;分隔" %>
+    </div>
+    <div class="form-group">
+        <label>TaskPostDeploy</label>
+        <%= f.text_field :task_post_deploy, type: "text", class: "form-control", placeholder: "部署后脚本任务，以;分隔" %>
+    </div>
+    <%= f.submit "创建", class: "btn btn-primary" %>
+    <%= link_to '取消', projects_path, type: "button", class: "btn btn-default" %>
 <% end %>
-<%= link_to '取消', projects_path %>

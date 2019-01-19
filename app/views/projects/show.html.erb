@@ -1,27 +1,32 @@
-Show Project<br>
-title: <%= @project.title %><br>
-description: <%= @project.description %><br>
-git_url: <%= @project.git_url %><br>
-git_version: <%= @project.git_version %><br>
-file_excludable: <%= @project.file_excludable %><br>
-local_store_path: <%= @project.local_store_path %><br>
-target_deploy_path: <%= @project.target_deploy_path %><br>
-target_backup_path: <%= @project.target_backup_path %><br>
-task_pre_checkout: <%= @project.task_pre_checkout %><br>
-task_post_checkout: <%= @project.task_post_checkout %><br>
-task_pre_deploy: <%= @project.task_pre_deploy %><br>
-task_post_deploy: <%= @project.task_post_deploy %><br>
-<br>
-ExtendFiles:
-<ul>
-    <% @project.project_extend_files.each do |file| %>
-        <li>filename: <%= file.filename %>
-        <%= link_to '编辑', edit_project_extend_file_path(file) %>
-        <%= link_to '删除', project_extend_file_path(file),
-              method: :delete,
-              data: { confirm: 'Are you sure?' } %></li>
-    <% end %>
-</ul>
-<%= link_to '新建附加文件', new_project_extend_file_path+'?project_id='+@project.id.to_s %>
 
-<%= link_to '返回列表', projects_path %>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= @project.title %></h3>
+  </div>
+  <div class="panel-body">
+    description: <%= @project.description %><br>
+    git_url: <%= @project.git_url %><br>
+    git_version: <%= @project.git_version %><br>
+    file_excludable: <%= @project.file_excludable %><br>
+    local_store_path: <%= @project.local_store_path %><br>
+    target_deploy_path: <%= @project.target_deploy_path %><br>
+    target_backup_path: <%= @project.target_backup_path %><br>
+    task_pre_checkout: <%= @project.task_pre_checkout %><br>
+    task_post_checkout: <%= @project.task_post_checkout %><br>
+    task_pre_deploy: <%= @project.task_pre_deploy %><br>
+    task_post_deploy: <%= @project.task_post_deploy %><br>
+  </div>
+</div>
+<div class="list-group">
+  <li class="list-group-item disabled">ExtendFiles:</li>
+  <% @project.project_extend_files.each do |file| %>
+    <li class="list-group-item">
+      <%= file.filename %>
+      <%= link_to '编辑', edit_project_extend_file_path(file), type: "button", class: "btn btn-default" %>
+      <%= link_to '删除', project_extend_file_path(file), method: :delete, data: { confirm: 'Are you sure?' }, type: "button", class: "btn btn-danger" %></li>
+  <% end %>
+</div>
+
+<%= link_to '新建附加文件', new_project_extend_file_path+'?project_id='+@project.id.to_s, class: "btn btn-primary" %>
+
+<%= link_to '返回列表', projects_path, type: "button", class: "btn btn-default" %>
