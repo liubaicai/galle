@@ -18,7 +18,7 @@
             <% unless @current_user.nil? %>
                 <div class="navbar-collapse">
                     <p class="navbar-text navbar-right">
-                        Signed in as <%= @current_user.username %>, <a href="/users/logout" class="navbar-link">注销</a>
+                        你好,  <%= @current_user.username %>  <a href="/users/logout" class="navbar-link">注销</a>
                     </p>
                 </div>
             <% end %>
