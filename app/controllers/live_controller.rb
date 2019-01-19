@@ -58,59 +58,56 @@ class LiveController < ApplicationController
 
         begin
 
-            response.live_push "#{project.task_pre_checkout} ..."
+            response.live_push "执行检出前置任务 ..."
             do_shell(project.task_pre_checkout)
     
             if Dir.exist?('.git')
                 git = Git.open('.')
                 if project.git_url == git.remotes.first.url
-    
-                    response.live_push "git fetch ..."
-                    do_shell("git fetch")
-    
-                    response.live_push "git reset ..."
-                    do_shell("git reset --hard")
-    
-                    response.live_push "git pull ..."
-                    do_shell("git pull")
+
+                    response.live_push "更新本地代码 ..."
+                    git.fetch
+                    git.reset_hard
+                    git.pull
                 
-                    response.live_push "git checkout #{project.git_version} ..."
-                    do_shell("git checkout #{project.git_version}")
+                    response.live_push "检出'#{project.git_version}'版本 ..."
+                    git.checkout project.git_version
     
                 else
                     
-                    response.live_push "delete old repo ..."
+                    response.live_push "删除旧仓库 ..."
     
                     FileUtils.cd("..")
                     FileUtils.rm_rf(localStorePath)
                     FileUtils.mkdir_p(localStorePath)
                     FileUtils.cd(localStorePath)
     
-                    response.live_push "git clone #{project.git_url} ..."
-                    do_shell("git clone #{project.git_url} .")
-                    
-                    response.live_push "git checkout #{project.git_version} ..."
-                    do_shell("git checkout #{project.git_version}")
+                    response.live_push "克隆代码库 ..."
+                    git = Git.clone(project.git_url,".")
+
+                    response.live_push "检出'#{project.git_version}'版本 ..."
+                    git.checkout project.git_version
         
                 end
             else
-    
-                response.live_push "git clone #{project.git_url} ..."
-                do_shell("git clone #{project.git_url} .")
-                
-                response.live_push "git checkout #{project.git_version} ..."
-                do_shell("git checkout #{project.git_version}")
+
+                response.live_push "克隆代码库 ..."
+                # do_shell("git clone #{project.git_url} .")
+                git = Git.clone(project.git_url,".")
+
+                response.live_push "检出'#{project.git_version}'版本 ..."
+                git.checkout project.git_version
     
             end
-    
-            response.live_push "#{project.task_post_checkout} ..."
+
+            response.live_push "执行检出后置任务 ..."
             do_shell(project.task_post_checkout)
 
+            response.live_push "检出完成"
         rescue => exception
-            response.live_push "#{exception.to_s} ..."
+            response.live_error exception
         end
 
-        response.live_push "checkout completed"
         response.live_close
 
         Rails.cache.write('local_shell_running', false)

@@ -51,11 +51,17 @@ function CheckProject (id) {
     var source = new EventSource("/live/checkoutproject?id="+id);
     source.onmessage = function (e) {
         console.log(e)
-        document.getElementById("result").innerHTML+= (e.data+"<br>")
+        document.getElementById("result").innerHTML = e.data+"<br>"+document.getElementById("result").innerHTML
     }
     source.onopen = function () {
+        document.getElementById("result").innerHTML = ""
         console.log("Server open")
     }
+    source.addEventListener("error", function (e) {
+        console.log(e)
+        document.getElementById("result").innerHTML = e.data+"<br>"+document.getElementById("result").innerHTML
+        document.getElementById("result").innerHTML = "项目检出失败"+"<br>"+document.getElementById("result").innerHTML
+    }, false)
     source.addEventListener("close", function (e) {
         source.close()
         console.log("Server close")
