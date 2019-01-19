@@ -10,25 +10,25 @@ class LiveController < ApplicationController
         server_id = params[:id]
         server = Server.find(server_id)
 
-        response.live_push "Connecting: #{server.address}:#{server.port}"
+        response.live_push "正在连接: #{server.address}:#{server.port}"
 
         begin
             Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
                 ssh.exec!("mkdir -p #{server.monitor_path}")
-                response.live_push "Connected"
+                response.live_push "连接成功"
             end
         rescue Timeout::Error
-            response.live_push "Timed out"
+            response.live_error "Timed out"
         rescue Errno::EHOSTUNREACH
-            response.live_push "Host unreachable"
+            response.live_error "Host unreachable"
         rescue Errno::ECONNREFUSED
-            response.live_push "Connection refused"
+            response.live_error "Connection refused"
         rescue Errno::EALREADY 
-            response.live_push "Connection refused(Operation already in progress)"
+            response.live_error "Connection refused(Operation already in progress)"
         rescue Net::SSH::AuthenticationFailed
-            response.live_push "Authentication failure"
+            response.live_error "Authentication failure"
         rescue => exception
-            response.live_push "#{exception.to_s} ..."
+            response.live_error exception
         end
 
         response.live_close
@@ -59,7 +59,9 @@ class LiveController < ApplicationController
         begin
 
             response.live_push "执行检出前置任务 ..."
-            do_shell(project.task_pre_checkout)
+            project.task_pre_checkout.split(';').each do |command|
+                do_shell(command)
+            end
     
             if Dir.exist?('.git')
                 git = Git.open('.')
@@ -68,6 +70,7 @@ class LiveController < ApplicationController
                     response.live_push "更新本地代码 ..."
                     git.fetch
                     git.reset_hard
+                    git.clean(:force=>true,:d=>true)
                     git.pull
                 
                     response.live_push "检出'#{project.git_version}'版本 ..."
@@ -92,7 +95,6 @@ class LiveController < ApplicationController
             else
 
                 response.live_push "克隆代码库 ..."
-                # do_shell("git clone #{project.git_url} .")
                 git = Git.clone(project.git_url,".")
 
                 response.live_push "检出'#{project.git_version}'版本 ..."
@@ -101,7 +103,9 @@ class LiveController < ApplicationController
             end
 
             response.live_push "执行检出后置任务 ..."
-            do_shell(project.task_post_checkout)
+            project.task_post_checkout.split(';').each do |command|
+                do_shell(command)
+            end
 
             response.live_push "检出完成"
         rescue => exception
@@ -123,7 +127,7 @@ class LiveController < ApplicationController
         publisher = Publisher.find(publisher_id)
 
         if publisher.published
-            response.live_push "has published"
+            response.live_push "该发布已经完成"
             response.live_close
             return
         end
@@ -143,8 +147,8 @@ class LiveController < ApplicationController
             localStorePath = "#{localRootPath}/tmp/store/#{project.id}"
             FileUtils.mkdir_p(localStorePath)
             FileUtils.cd(localStorePath)
-            
-            response.live_push "task_pre_checkout ..."
+
+            response.live_push "执行检出前置任务 ..."
             project.task_pre_checkout.split(';').each do |command|
                 do_shell(command)
             end
@@ -152,54 +156,51 @@ class LiveController < ApplicationController
             if Dir.exist?('.git')
                 git = Git.open('.')
                 if project.git_url == git.remotes.first.url
-    
-                    response.live_push "git fetch ..."
-                    do_shell("git fetch")
-    
-                    response.live_push "git reset ..."
-                    do_shell("git reset --hard")
-                    do_shell("git clean -df")
-    
-                    response.live_push "git pull ..."
-                    do_shell_without_put("git pull")
-                
-                    response.live_push "git checkout #{project.git_version} ..."
-                    do_shell("git checkout #{project.git_version}")
-    
+
+                    response.live_push "更新本地代码 ..."
+                    git.fetch
+                    git.reset_hard
+                    git.clean(:force=>true,:d=>true)
+                    git.pull
+
+                    response.live_push "检出'#{project.git_version}'版本 ..."
+                    git.checkout project.git_version
+
+
                 else
-                    
-                    response.live_push "delete old repo ..."
-    
+
+                    response.live_push "删除旧仓库 ..."
+
                     FileUtils.cd("..")
                     FileUtils.rm_rf(localStorePath)
                     FileUtils.mkdir_p(localStorePath)
                     FileUtils.cd(localStorePath)
-    
-                    response.live_push "git clone #{project.git_url} ..."
-                    do_shell("git clone #{project.git_url} .")
-                    
-                    response.live_push "git checkout #{project.git_version} ..."
-                    do_shell("git checkout #{project.git_version}")
-        
+
+                    response.live_push "克隆代码库 ..."
+                    git = Git.clone(project.git_url,".")
+
+                    response.live_push "检出'#{project.git_version}'版本 ..."
+                    git.checkout project.git_version
+
                 end
             else
-    
-                response.live_push "git clone #{project.git_url} ..."
-                do_shell("git clone #{project.git_url} .")
-                
-                response.live_push "git checkout #{project.git_version} ..."
-                do_shell("git checkout #{project.git_version}")
-    
+
+                response.live_push "克隆代码库 ..."
+                git = Git.clone(project.git_url,".")
+
+                response.live_push "检出'#{project.git_version}'版本 ..."
+                git.checkout project.git_version
+
             end
-    
-            response.live_push "task_post_checkout ..."
+
+            response.live_push "执行检出后置任务 ..."
             project.task_post_checkout.split(';').each do |command|
                 do_shell(command)
             end
 
-            response.live_push "checkout completed"
+            response.live_push "代码检出完成 ..."
 
-            response.live_push "write extendfiles ..."
+            response.live_push "写入附加文件 ..."
             project_extend_files = project.project_extend_files
             project_extend_files.each do |project_extend_file|
                 tname = project_extend_file.filename
@@ -214,70 +215,59 @@ class LiveController < ApplicationController
                 aFile.close
             end
 
-            response.live_push "files ready"
-            response.live_push "publish to "+publisher.publisher_servers.size.to_s+" servers ..."
+            response.live_push "文件准备完成 ..."
+            response.live_push "共发布到"+publisher.publisher_servers.size.to_s+"台服务器 ..."
 
             publisher.publisher_servers.each do |publisher_server|
                 server = publisher_server.server
-                response.live_push "connecting to: #{server.address}:#{server.port}"
-                begin
-                    Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true)  do |sftp|
-                        response.live_push "task_pre_deploy ..."
-                        unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
-                            project.task_pre_deploy.split(';').each do |command|
-                                sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
-                                    response.live_push data
-                                end
-                            end
-                        end
+                response.live_push "开始连接到‘#{server.address}:#{server.port}‘ ..."
 
-                        response.live_push "ready to deploy ..."
-                        tmpStorePath = "#{localStorePath}.tmp"
-                        if Dir.exist?(tmpStorePath)
-                            FileUtils.rm_rf(tmpStorePath)
-                        end
-                        FileUtils.mkdir_p(tmpStorePath)
-                        Find.find(localStorePath) do |path|
-                            unless path==localStorePath
-                                real_path = path.gsub(localStorePath,'')
-                                FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
-                            end
-                        end
-                        excs = project.file_excludable.split(';')
-                        excs.each do |exc|
-                            excp = "#{tmpStorePath}/#{exc}"
-                            FileUtils.rm_rf(excp)
-                        end
+                Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true)  do |sftp|
 
-                        sftp.session.exec!("mkdir -p #{project.target_deploy_path}")
-                        sftp.dir.foreach(project.target_deploy_path) do |entry|
-                            if(entry.name!='.' && entry.name!='..')
-                                sftp.session.exec!("rm -rf #{project.target_deploy_path}/#{entry.name}")
-                            end
-                        end
-                        sftp.upload!(tmpStorePath, project.target_deploy_path)
-
-                        response.live_push "task_post_deploy ..."
-                        unless project.task_post_deploy.nil? || project.task_post_deploy == ""
-                            project.task_post_deploy.split(';').each do |command|
-                                sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
-                                    response.live_push data
-                                end
+                    response.live_push "执行部署前置任务 ..."
+                    unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
+                        project.task_pre_deploy.split(';').each do |command|
+                            sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                response.live_push data
                             end
                         end
                     end
-                rescue Timeout::Error
-                    response.live_push "Timed out"
-                rescue Errno::EHOSTUNREACH
-                    response.live_push "Host unreachable"
-                rescue Errno::ECONNREFUSED
-                    response.live_push "Connection refused"
-                rescue Net::SSH::AuthenticationFailed
-                    response.live_push "Authentication failure"
-                rescue Net::SFTP::StatusException => exception
-                    response.live_push "StatusException: #{exception.description};#{exception.response}"
-                rescue => exception
-                    response.live_push "#{exception.to_s}"
+
+                    response.live_push "准备文件 ..."
+                    tmpStorePath = "#{localStorePath}.tmp"
+                    if Dir.exist?(tmpStorePath)
+                        FileUtils.rm_rf(tmpStorePath)
+                    end
+                    FileUtils.mkdir_p(tmpStorePath)
+                    Find.find(localStorePath) do |path|
+                        unless path==localStorePath
+                            real_path = path.gsub(localStorePath,'')
+                            FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
+                        end
+                    end
+                    excs = project.file_excludable.split(';')
+                    excs.each do |exc|
+                        excp = "#{tmpStorePath}/#{exc}"
+                        FileUtils.rm_rf(excp)
+                    end
+
+                    response.live_push "正在发布文件 ..."
+                    sftp.session.exec!("mkdir -p #{project.target_deploy_path}")
+                    sftp.dir.foreach(project.target_deploy_path) do |entry|
+                        if(entry.name!='.' && entry.name!='..')
+                            sftp.session.exec!("rm -rf #{project.target_deploy_path}/#{entry.name}")
+                        end
+                    end
+                    sftp.upload!(tmpStorePath, project.target_deploy_path)
+
+                    response.live_push "执行部署后置任务 ..."
+                    unless project.task_post_deploy.nil? || project.task_post_deploy == ""
+                        project.task_post_deploy.split(';').each do |command|
+                            sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                response.live_push data
+                            end
+                        end
+                    end
                 end
                 
             end
@@ -286,9 +276,19 @@ class LiveController < ApplicationController
             publisher.publish_time = Time.now
             publisher.save
 
-            response.live_push "publish completed"
+            response.live_push "部署完成"
+        rescue Timeout::Error
+            response.live_error "Timed out"
+        rescue Errno::EHOSTUNREACH
+            response.live_error "Host unreachable"
+        rescue Errno::ECONNREFUSED
+            response.live_error "Connection refused"
+        rescue Net::SSH::AuthenticationFailed
+            response.live_error "Authentication failure"
+        rescue Net::SFTP::StatusException => exception
+            response.live_error "StatusException: #{exception.description};#{exception.response}"
         rescue => exception
-            response.live_push "#{exception.to_s} ..."
+            response.live_error exception
         end
 
         response.live_close

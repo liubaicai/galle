@@ -1,37 +1,78 @@
 
-<ul>
-    <% @publishers.each do |publisher| %>
-        <li>
-            <%= publisher.project.title %>: 
-            <%= publisher.title %>
-            <input type="checkbox" disabled <% if publisher.published %>checked<% end %> > 
-            <% if publisher.published %>publishtime: <%= publisher.publish_time.to_s %><% end %>
-        </li>
-        <% publisher.publisher_servers.each do |server| %>
-            <li>发布到: <%= server.server.address %>:<%= server.server.port %></li>
-        <% end %>
-        <li>
-            <%= link_to '删除', publisher_path(publisher),
-                method: :delete,
-                data: { confirm: 'Are you sure?' } %>
-            <button type="button" onclick="toPublish(<%= publisher.id %>)">发布</button>
-        </li>
-        <br>
-    <% end %>
-</ul>
+<style>
+    .table tbody tr td{
+      vertical-align: middle;
+    }
+    .table tbody tr th{
+      vertical-align: middle;
+    }
+</style>
 
-<div id="result"></div>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Project</th>
+    <th>Title</th>
+    <th>Servers</th>
+    <th>Operation</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @publishers.each do |publisher| %>
+    <tr>
+      <th scope="row"><%= publisher.id %></th>
+      <td><%= publisher.project.title %></td>
+      <td><%= publisher.title %></td>
+      <td>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle"
+                  onmouseover="document.getElementById('menu<%= publisher.id %>').style.display='block'"
+                  onmouseout="document.getElementById('menu<%= publisher.id %>').style.display='none'"
+          >
+            共<%= publisher.publisher_servers.size %>台服务器
+          </button>
+          <ul id="menu<%= publisher.id %>" class="dropdown-menu">
+            <% publisher.publisher_servers.each do |server| %>
+              <li><%= server.server.address %>:<%= server.server.port %></li>
+            <% end %>
+          </ul>
+        </div>
+      </td>
+      <td>
+        <%= link_to '删除', publisher_path(publisher), method: :delete, data: { confirm: 'Are you sure?' }, type: "button", class: "btn btn-danger" %>
+        <button type="button" class="btn btn-primary" onclick="toPublish(<%= publisher.id %>)">发布</button>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<div class="panel panel-default">
+  <div class="panel-heading">服务器响应:</div>
+  <div id="result" class="panel-body">
+    ...
+  </div>
+</div>
 
 <script>
 function toPublish (id) {
     var source = new EventSource("/live/publishproject?id="+id);
     source.onmessage = function (e) {
         console.log(e)
-        document.getElementById("result").innerHTML+= (e.data+"<br>")
+        document.getElementById("result").innerHTML = e.data+"<br>"+document.getElementById("result").innerHTML
     }
     source.onopen = function () {
+        document.getElementById("result").innerHTML = ""
         console.log("Server open")
     }
+    source.addEventListener("error", function (e) {
+        console.log(e)
+        document.getElementById("result").innerHTML = e.data+"<br>"+document.getElementById("result").innerHTML
+        document.getElementById("result").innerHTML = "发布失败"+"<br>"+document.getElementById("result").innerHTML
+    }, false)
     source.addEventListener("close", function (e) {
         source.close()
         console.log("Server close")
