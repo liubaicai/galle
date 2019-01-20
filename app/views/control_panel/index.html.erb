@@ -38,9 +38,9 @@
     </div>
     <div>
         <ul class="nav nav-pills nav-stacked col-md-4">
-            <li role="presentation" :class="project_nav_class"><a @click="childFrameLoad('/projects');project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目列表</a></li>
-            <li role="presentation" :class="server_nav_class"><a @click="childFrameLoad('/servers');project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器列表</a></li>
-            <li role="presentation" :class="publisher_nav_class"><a @click="childFrameLoad('/publishers');project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布列表</a></li>
+            <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects')">项目列表</a></li>
+            <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers')">服务器列表</a></li>
+            <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers')">发布列表</a></li>
         </ul>
         <div id="childframe" class="embed-responsive embed-responsive-4by3">
             <iframe id='frame' class="embed-responsive-item" :src="child_frame_src"></iframe>
@@ -72,11 +72,29 @@ var app = new Vue({
         setTimeout(() => { 
             this.is_show_jumbotron = false
         }, 1000)
+        setInterval( () => {
+            let iurl = document.getElementById('frame').contentWindow.location.href
+            if(iurl.indexOf("/projects") != -1){
+                this.project_nav_class='active';
+                this.server_nav_class='';
+                this.publisher_nav_class=''
+            }
+            else if(iurl.indexOf("/servers") != -1){
+                this.project_nav_class='';
+                this.server_nav_class='active';
+                this.publisher_nav_class=''
+            }
+            else if(iurl.indexOf("/publishers") != -1){
+                this.project_nav_class='';
+                this.server_nav_class='';
+                this.publisher_nav_class='active'
+            }
+        }, 100)
     },
     methods: {
-        childFrameLoad: function (src) {
+        loadChildFrame: function (src) {
             document.getElementById('frame').contentWindow.location = src
-        }
+        },
     }
 })
 </script>
