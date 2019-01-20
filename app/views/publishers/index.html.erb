@@ -11,18 +11,17 @@
 <table class="table table-striped">
   <thead>
   <tr>
-    <th>ID</th>
     <th>Project</th>
     <th>Title</th>
     <th>Servers</th>
     <th>Operation</th>
+    <th>Published</th>
   </tr>
   </thead>
   <tbody>
   <% @publishers.each do |publisher| %>
     <tr>
-      <th scope="row"><%= publisher.id %></th>
-      <td><%= publisher.project.title %></td>
+      <th scope="row"><%= publisher.project.title %></th>
       <td><%= publisher.title %></td>
       <td>
         <div class="btn-group">
@@ -34,7 +33,7 @@
           </button>
           <ul id="menu<%= publisher.id %>" class="dropdown-menu">
             <% publisher.publisher_servers.each do |server| %>
-              <li><%= server.server.address %>:<%= server.server.port %></li>
+              <li class="list-group-item"><%= server.server.address %>:<%= server.server.port %></li>
             <% end %>
           </ul>
         </div>
@@ -42,6 +41,13 @@
       <td>
         <%= link_to '删除', publisher_path(publisher), method: :delete, data: { confirm: 'Are you sure?' }, type: "button", class: "btn btn-danger" %>
         <button type="button" class="btn btn-primary" onclick="toPublish(<%= publisher.id %>)">发布</button>
+      </td>
+      <td>
+      <% if publisher.published %>
+        <%= publisher.publish_time %>
+      <% else %>
+        --
+      <% end %>
       </td>
     </tr>
   <% end %>
@@ -56,6 +62,8 @@
     ...
   </div>
 </div>
+
+<%= will_paginate @publishers, renderer: BootstrapPagination::Rails %>
 
 <script>
 function toPublish (id) {

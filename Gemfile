@@ -61,7 +61,18 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+# 分页插件
+gem 'will_paginate', '~> 3.1.0'
+gem 'will_paginate-bootstrap'
+
+# 定时任务
 gem 'rufus-scheduler'
+
+# ssh工具
 gem 'net-ssh'
+
+# sftp工具
 gem 'net-sftp'
+
+# git工具
 gem 'git'

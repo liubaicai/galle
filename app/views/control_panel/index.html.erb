@@ -38,9 +38,9 @@
     </div>
     <div>
         <ul class="nav nav-pills nav-stacked col-md-4">
-            <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects')">项目列表</a></li>
-            <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers')">服务器列表</a></li>
-            <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers')">发布列表</a></li>
+            <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目列表</a></li>
+            <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器列表</a></li>
+            <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布列表</a></li>
         </ul>
         <div id="childframe" class="embed-responsive embed-responsive-4by3">
             <iframe id='frame' class="embed-responsive-item" :src="child_frame_src"></iframe>
@@ -89,7 +89,7 @@ var app = new Vue({
                 this.server_nav_class='';
                 this.publisher_nav_class='active'
             }
-        }, 100)
+        }, 1000)
     },
     methods: {
         loadChildFrame: function (src) {
