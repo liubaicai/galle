@@ -1,7 +1,10 @@
 class LiveController < ApplicationController
     include ActionController::Live
     ActionController::Live::Response.class_eval do
-       include Lesponses
+        include Lesponses
+    end
+    ActionDispatch::Response.class_eval do
+        include Lesponses
     end
 
     def check_server
