@@ -1,5 +1,5 @@
 
-module LiveResponseMethods
+module Lesponses
 
     def live_header
         self.headers['Content-Type'] = 'text/event-stream'
