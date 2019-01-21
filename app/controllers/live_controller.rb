@@ -16,7 +16,7 @@ class LiveController < ApplicationController
         response.live_push "正在连接: #{server.address}:#{server.port}"
 
         begin
-            Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true) do |ssh|
+            Net::SSH.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true, :config => false, :user_known_hosts_file => [], :keys => []) do |ssh|
                 ssh.exec!("mkdir -p #{server.monitor_path}")
                 response.live_push "连接成功"
             end
@@ -225,7 +225,7 @@ class LiveController < ApplicationController
                 server = publisher_server.server
                 response.live_push "开始连接到‘#{server.address}:#{server.port}‘ ..."
 
-                Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true)  do |sftp|
+                Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password, :timeout => 10, :non_interactive => true, :config => false, :user_known_hosts_file => [], :keys => [])  do |sftp|
 
                     response.live_push "执行部署前置任务 ..."
                     unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
