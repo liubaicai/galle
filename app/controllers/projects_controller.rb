@@ -15,6 +15,7 @@ class ProjectsController < ApplicationController
     def create
         project = Project.new(project_params)
         project.save
+        Log.create_log(@current_user.id, 'CreateProject', "#{project.title}:#{project.description}")
         redirect_to projects_path
     end
 
@@ -25,12 +26,14 @@ class ProjectsController < ApplicationController
     def update
         project = Project.find(params[:id])
         project.update(project_params)
+        Log.create_log(@current_user.id, 'UpdateProject', "#{project.title}:#{project.description}")
         redirect_to projects_path
     end
     
     def destroy
         project = Project.find(params[:id])
         project.destroy
+        Log.create_log(@current_user.id, 'DeleteProject', "#{project.title}:#{project.description}")
         redirect_to projects_path
     end
 

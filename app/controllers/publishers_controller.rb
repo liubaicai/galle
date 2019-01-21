@@ -22,12 +22,14 @@ class PublishersController < ApplicationController
                 publisher_server.save
             end
         end
+        Log.create_log(@current_user.id, 'CreatePublisher', "#{publisher.title}:#{publisher.project.title}")
         redirect_to publishers_path
     end
     
     def destroy
         publisher = Publisher.find(params[:id])
         publisher.destroy
+        Log.create_log(@current_user.id, 'DeletePublisher', "#{publisher.title}:#{publisher.project.title}")
         redirect_to publishers_path
     end
 

@@ -1,0 +1,16 @@
+
+<%= form_tag controller: "users", action: "create", method: "post" do %>
+    <div class="form-group">
+        <label>用户名</label>
+        <%= text_field_tag :username,"", type: "text", class: "form-control", placeholder: "用户名" %>
+    </div>
+    <div class="form-group">
+        <label>密码</label>
+        <%= text_field_tag :password,"", type: "text", class: "form-control", placeholder: "密码" %>
+    </div>
+    <div class="form-group">
+      <%= @error %>
+    </div>
+    <%= submit_tag "新建", class: "btn btn-primary" %>
+    <%= link_to '取消', users_path, type: "button", class: "btn btn-default" %>
+<% end %>

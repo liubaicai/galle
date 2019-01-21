@@ -3,15 +3,20 @@ Rails.application.routes.draw do
     
     root 'control_panel#index'
 
+    get 'board' => 'control_panel#board'
+
     get 'users/login'
     get 'users/logout'
     post 'users/login' => 'users#login_post'
     post 'users/logout' => 'users#logout_post'
+    get 'users/changepwd'
+    post 'users/changepwd' => 'users#changepwd_post'
     
     resources :servers
     resources :projects
     resources :publishers
     resources :project_extend_files
+    resources :users
 
     get 'status/cpu'
 

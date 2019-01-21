@@ -14,4 +14,12 @@ class ApplicationController < ActionController::Base
             end
         end
     end
+
+    def Log.create_log(uid, job, target)
+        log = Log.new
+        log.job = job
+        log.target = target
+        log.user_id = uid
+        log.save
+    end
 end

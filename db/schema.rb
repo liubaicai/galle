@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_17_105802) do
+ActiveRecord::Schema.define(version: 2019_01_21_111501) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "target"
     t.index ["user_id"], name: "index_logs_on_user_id"
   end
 
