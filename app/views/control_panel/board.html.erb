@@ -1,1 +1,38 @@
-控制面板
+
+<div id="app">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      {{ local_server_status.system.description }} | {{ local_server_status.cpu.model }} |
+      {{ (parseInt(local_server_status.memory.mem)/1073741824).toFixed(2) }}G
+    </div>
+  </div>
+
+  <div class="panel panel-warning">
+    <div class="panel-heading">
+      <h3 class="panel-title">未完成的发布</h3>
+    </div>
+    <div class="panel-body">
+      Panel content
+    </div>
+  </div>
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">最近的活动</h3>
+    </div>
+    <div class="panel-body">
+      Panel content
+    </div>
+  </div>
+</div>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            local_server_status: <%== @local_server_status %>,
+        },
+        created: function () {
+        },
+    })
+</script>
