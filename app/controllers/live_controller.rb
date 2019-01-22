@@ -65,7 +65,7 @@ class LiveController < ApplicationController
             project.task_pre_checkout.split(';').each do |command|
                 do_shell(command)
             end
-    
+
             if Dir.exist?('.git')
                 git = Git.open('.')
                 if project.git_url == git.remotes.first.url

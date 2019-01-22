@@ -19,3 +19,5 @@ module Galle
     # the framework and any gems in your application.
   end
 end
+
+ENV["GIT_SSH_COMMAND"]="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
