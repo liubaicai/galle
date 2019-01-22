@@ -280,6 +280,8 @@ class LiveController < ApplicationController
             publisher.save
 
             response.live_push "部署完成"
+
+            Log.create_log(@current_user.id, 'Publish', "#{publisher.title}:#{project.title}")
         rescue Timeout::Error
             response.live_error "Timed out"
         rescue Errno::EHOSTUNREACH
