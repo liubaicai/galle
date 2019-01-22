@@ -1,24 +1,13 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+TODO-list  
+- 区分测试和线上环境  
+- 服务器采用ssh-key登录  
+- 选择服务器选项放到项目配置里  
+- 项目添加‘仅包含某些文件’模式  
+- 项目自动排除.git  
+- 项目自动默认master分支  
+- 项目复制功能  
+- 历史发布备份  
+- 各种表单项详细的提示和示例 
+- 查看当前部署程序的ssh-key.pub  
