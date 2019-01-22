@@ -1,4 +1,13 @@
 
+<style>
+  .table tbody tr td{
+    vertical-align: middle;
+  }
+  .table tbody tr th{
+    vertical-align: middle;
+  }
+</style>
+
 <div id="app">
   <div class="panel panel-default">
     <div class="panel-body">
@@ -7,12 +16,16 @@
     </div>
   </div>
 
-  <div class="panel panel-warning">
+  <div class="panel panel-warning" onclick="window.location = '/publishers'">
     <div class="panel-heading">
       <h3 class="panel-title">未完成的发布</h3>
     </div>
     <div class="panel-body">
-      Panel content
+      <% @publishers.each do |publisher| %>
+        <button type="button" class="btn btn-default" style="margin: 2px 0 2px 0" onclick="window.location = '/publishers'">
+          <%= publisher.title %>  <span class="label label-default"><%= publisher.project.title %></span>
+        </button>
+      <% end %>
     </div>
   </div>
 
@@ -20,8 +33,15 @@
     <div class="panel-heading">
       <h3 class="panel-title">最近的活动</h3>
     </div>
-    <div class="panel-body">
-      Panel content
+    <div class="panel-body list-group">
+      <% @logs.each do |log| %>
+        <li class="list-group-item">
+          <span class="text-primary"><%= log.user.username %></span>
+          @<span class="text-muted"><%= log.created_at %></span>:
+          <span class="text-danger"><%= log.job %></span>-
+          <span class="text-muted"><%= log.target %></span>
+        </li>
+      <% end %>
     </div>
   </div>
 </div>

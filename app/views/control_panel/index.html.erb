@@ -1,11 +1,11 @@
 
 <style>
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s
-    }
-    .fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
-        opacity: 0
-    }
+    /*.fade-enter-active, .fade-leave-active {*/
+        /*transition: opacity .5s*/
+    /*}*/
+    /*.fade-enter, .fade-leave-to !* .fade-leave-active in below version 2.1.8 *! {*/
+        /*opacity: 0*/
+    /*}*/
 </style>
 
 <div id="app">
@@ -24,12 +24,12 @@
             <% end %>
         </div>
     </nav>
-    <transition name="fade">
-        <div v-if="is_show_jumbotron" class="jumbotron">
-            <h1>Galle</h1>
-            <p>A project deployment platform </p>
-        </div>
-    </transition>
+<!--    <transition name="fade">-->
+<!--        <div v-if="is_show_jumbotron" class="jumbotron">-->
+<!--            <h1>Galle</h1>-->
+<!--            <p>A project deployment platform </p>-->
+<!--        </div>-->
+<!--    </transition>-->
     <div>
         <ul class="nav nav-pills nav-stacked col-md-4">
         <% if @current_user.level>100 %>
@@ -44,7 +44,7 @@
         <% end %>
         </ul>
         <div id="childframe" class="embed-responsive embed-responsive-4by3">
-            <iframe id='frame' class="embed-responsive-item" :src="child_frame_src"></iframe>
+            <iframe id='frame' class="embed-responsive-item" src="/board"></iframe>
         </div>
     </div>
 </div>
