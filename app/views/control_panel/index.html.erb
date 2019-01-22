@@ -31,7 +31,7 @@
 <!--        </div>-->
 <!--    </transition>-->
     <div>
-        <ul class="nav nav-pills nav-stacked col-md-4">
+        <ul class="nav nav-pills nav-stacked col-md-3">
         <% if @current_user.level>100 %>
             <li role="presentation" :class="user_nav_class"><a @click="loadChildFrame('/users');user_nav_class='active';project_nav_class='';server_nav_class='';publisher_nav_class=''">用户</a></li>
             <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');user_nav_class='';project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
@@ -43,7 +43,7 @@
             <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布</a></li>
         <% end %>
         </ul>
-        <div id="childframe" class="embed-responsive embed-responsive-4by3">
+        <div class="embed-responsive embed-responsive-4by3">
             <iframe id='frame' class="embed-responsive-item" src="/board"></iframe>
         </div>
     </div>

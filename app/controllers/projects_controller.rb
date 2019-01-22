@@ -16,7 +16,7 @@ class ProjectsController < ApplicationController
         project = Project.new(project_params)
         project.save
         Log.create_log(@current_user.id, 'CreateProject', "#{project.title}:#{project.description}")
-        redirect_to projects_path
+        redirect_to project_path(project)
     end
 
     def edit

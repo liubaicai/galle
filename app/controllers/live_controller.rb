@@ -218,6 +218,24 @@ class LiveController < ApplicationController
                 aFile.close
             end
 
+            response.live_push "准备文件 ..."
+            tmpStorePath = "#{localStorePath}.tmp"
+            if Dir.exist?(tmpStorePath)
+                FileUtils.rm_rf(tmpStorePath)
+            end
+            FileUtils.mkdir_p(tmpStorePath)
+            Find.find(localStorePath) do |path|
+                unless path==localStorePath
+                    real_path = path.gsub(localStorePath,'')
+                    FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
+                end
+            end
+            excs = project.file_excludable.split(';')
+            excs.each do |exc|
+                excp = "#{tmpStorePath}/#{exc}"
+                FileUtils.rm_rf(excp)
+            end
+
             response.live_push "文件准备完成 ..."
             response.live_push "共发布到"+publisher.publisher_servers.size.to_s+"台服务器 ..."
 
@@ -234,24 +252,6 @@ class LiveController < ApplicationController
                                 response.live_push data
                             end
                         end
-                    end
-
-                    response.live_push "准备文件 ..."
-                    tmpStorePath = "#{localStorePath}.tmp"
-                    if Dir.exist?(tmpStorePath)
-                        FileUtils.rm_rf(tmpStorePath)
-                    end
-                    FileUtils.mkdir_p(tmpStorePath)
-                    Find.find(localStorePath) do |path|
-                        unless path==localStorePath
-                            real_path = path.gsub(localStorePath,'')
-                            FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
-                        end
-                    end
-                    excs = project.file_excludable.split(';')
-                    excs.each do |exc|
-                        excp = "#{tmpStorePath}/#{exc}"
-                        FileUtils.rm_rf(excp)
                     end
 
                     response.live_push "正在发布文件 ..."
