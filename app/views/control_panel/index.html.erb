@@ -37,12 +37,14 @@
             <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');user_nav_class='';project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
             <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');user_nav_class='';project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器</a></li>
             <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');user_nav_class='';project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布</a></li>
+            <li><a href="/settings/sshkey" target="_self">SSHKey</a></li>
         <% else %>
             <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
             <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器</a></li>
             <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布</a></li>
         <% end %>
         </ul>
+
         <div class="embed-responsive embed-responsive-4by3">
             <iframe id='frame' class="embed-responsive-item" src="/board"></iframe>
         </div>

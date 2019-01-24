@@ -70,6 +70,7 @@ gem 'rufus-scheduler'
 
 # ssh工具
 gem 'net-ssh'
+gem 'sshkey'
 
 # sftp工具
 gem 'net-sftp'

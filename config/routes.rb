@@ -20,6 +20,9 @@ Rails.application.routes.draw do
 
     get 'status/cpu'
 
+    get 'settings/sshkey' => 'settings#sshkey'
+    post 'settings/sshkey' => 'settings#sshkey_post'
+
     get 'live/checkserver' => 'live#check_server'
     get 'live/checkoutproject' => 'live#checkout_project'
     get 'live/publishproject' => 'live#publish_project'
