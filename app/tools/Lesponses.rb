@@ -6,27 +6,39 @@ module Lesponses
     end
 
     def live_push data
-        data.split("\n") do |d|
-            self.stream.write "data:#{d}"
-            self.stream.write "\n\n"
+        begin
+            data.split("\n") do |d|
+                self.stream.write "data:#{d}"
+                self.stream.write "\n\n"
+            end
+        rescue ActionController::Live::ClientDisconnected => e
+            puts e
         end
     end
 
     def live_error exception
-        self.stream.write "event: error"
-        self.stream.write "\n"
-        exception.to_s.split("\n") do |d|
-            self.stream.write "data:#{d}"
+        begin
+            self.stream.write "event: error"
             self.stream.write "\n"
+            exception.to_s.split("\n") do |d|
+                self.stream.write "data:#{d}"
+                self.stream.write "\n"
+            end
+            self.stream.write "\n\n"
+        rescue ActionController::Live::ClientDisconnected => e
+            puts e
         end
-        self.stream.write "\n\n"
     end
 
     def live_close
-        self.stream.write "event: close"
-        self.stream.write "\n"
-        self.stream.write "data:completed"
-        self.stream.write "\n\n"
+        begin
+            self.stream.write "event: close"
+            self.stream.write "\n"
+            self.stream.write "data:completed"
+            self.stream.write "\n\n"
+        rescue ActionController::Live::ClientDisconnected => e
+            puts e
+        end
     end
 
 end
