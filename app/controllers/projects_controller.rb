@@ -14,6 +14,9 @@ class ProjectsController < ApplicationController
 
     def create
         project = Project.new(project_params)
+        if project.git_version==''
+            project.git_version = 'master'
+        end
         project.save
         Log.create_log(@current_user.id, 'CreateProject', "#{project.title}:#{project.description}")
         redirect_to project_path(project)
@@ -26,6 +29,10 @@ class ProjectsController < ApplicationController
     def update
         project = Project.find(params[:id])
         project.update(project_params)
+        if project.git_version==''
+            project.git_version = 'master'
+            project.save
+        end
         Log.create_log(@current_user.id, 'UpdateProject', "#{project.title}:#{project.description}")
         redirect_to projects_path
     end

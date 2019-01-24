@@ -227,16 +227,22 @@ class LiveController < ApplicationController
                 FileUtils.rm_rf(tmpStorePath)
             end
             FileUtils.mkdir_p(tmpStorePath)
+            excs = project.file_excludable.split(';')
+
             Find.find(localStorePath) do |path|
                 unless path==localStorePath
                     real_path = path.gsub(localStorePath,'')
-                    FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}")
+                    isMV = true
+                    excs.each do |exc|
+                        if real_path.start_with? "/#{exc}"
+                            isMV = false
+                        end
+                    end
+                    if real_path.start_with? "/.git"
+                        isMV = false
+                    end
+                    FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
                 end
-            end
-            excs = project.file_excludable.split(';')
-            excs.each do |exc|
-                excp = "#{tmpStorePath}/#{exc}"
-                FileUtils.rm_rf(excp)
             end
 
             response.live_push "文件准备完成 ..."

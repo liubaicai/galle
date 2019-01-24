@@ -10,13 +10,11 @@ class SettingsController < ApplicationController
 
   def sshkey_post
     k = SSHKey.generate(
-        type:       "RSA",
-        bits:       1024,
         comment:    "Galle",
-        passphrase: "galls"
+        passphrase: "galle"
     )
     privateKey = k.private_key
-    publicKey = k.public_key
+    publicKey = k.ssh_public_key
     ssh_path = Rails.root.join('tmp', '.ssh')
     FileUtils.mkdir_p ssh_path.to_s
     private_key_path = ssh_path.join('id_rsa')
@@ -29,8 +27,8 @@ class SettingsController < ApplicationController
     publicFile = File.new(public_key_path,'w+')
     publicFile.write(publicKey)
     publicFile.close
-    File.chmod(0400,"#{private_key_path}")
-    File.chmod(0400,"#{public_key_path}")
+    File.chmod(0600,"#{private_key_path}")
+    File.chmod(0600,"#{public_key_path}")
 
     @public_key = publicKey
     render "sshkey"

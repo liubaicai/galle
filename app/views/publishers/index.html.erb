@@ -33,7 +33,9 @@
           </button>
           <ul id="menu<%= publisher.id %>" class="dropdown-menu">
             <% publisher.publisher_servers.each do |server| %>
-              <li class="list-group-item"><%= server.server.address %>:<%= server.server.port %></li>
+              <% unless server.server.nil? %>
+                <li class="list-group-item"><%= server.server.address %>:<%= server.server.port %></li>
+              <% end %>
             <% end %>
           </ul>
         </div>

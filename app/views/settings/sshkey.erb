@@ -1,3 +1,6 @@
+<style>
+  p { word-break:break-all; }
+</style>
 <div class="col-md-2"></div>
 <div class="col-md-8">
   <div class="panel panel-default">
@@ -5,7 +8,7 @@
       <h3 class="panel-title">当前公钥</h3>
     </div>
     <div class="panel-body">
-      <%= @public_key %>
+      <p><%= @public_key %></p>
     </div>
   </div>
   <%= form_tag('/settings/sshkey', method: 'post') do %>
