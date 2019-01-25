@@ -40,4 +40,10 @@ unless File.exist? private_key_path
 end
 File.chmod(0600,"#{private_key_path}")
 File.chmod(0600,"#{public_key_path}")
-ENV["GIT_SSH_COMMAND"]="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i #{private_key_path}"
+
+# win10的wsl子系统，chmod权限bug，导致项目目录里的key文件不符合git的权限要求，因此在development环境采用用户默认key
+if Rails.env.production?
+  ENV["GIT_SSH_COMMAND"]="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i #{private_key_path}"
+else
+  ENV["GIT_SSH_COMMAND"]="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+end

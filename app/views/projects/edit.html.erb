@@ -17,12 +17,12 @@ Edit Project
     <%= f.text_field :git_version, type: "text", class: "form-control", placeholder: "项目分支或版本" %>
   </div>
   <div class="form-group">
-    <label>ExcludableFiles</label>
-    <%= f.text_field :file_excludable, type: "text", class: "form-control", placeholder: "排除的文件，以;分隔" %>
+    <label>IncludedFiles</label>
+    <%= f.text_field :file_included, type: "text", class: "form-control", placeholder: "仅添加的文件或文件夹，以;分隔" %>
   </div>
-  <div class="hidden form-group">
-    <label>LocalStorePath</label>
-    <%= f.text_field :local_store_path, type: "text", class: "form-control", placeholder: "本地临时存储地址" %>
+  <div class="form-group">
+    <label>ExcludableFiles</label>
+    <%= f.text_field :file_excludable, type: "text", class: "form-control", placeholder: "排除的文件或文件夹，以;分隔" %>
   </div>
   <div class="form-group">
     <label>TargetDeployPath</label>

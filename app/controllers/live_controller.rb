@@ -206,7 +206,48 @@ class LiveController < ApplicationController
 
             response.live_push "代码检出完成 ..."
 
+            response.live_push "准备文件 ..."
+            tmpStorePath = "#{localStorePath}.tmp"
+            if Dir.exist?(tmpStorePath)
+                FileUtils.rm_rf(tmpStorePath)
+            end
+            FileUtils.mkdir_p(tmpStorePath)
+
+            if project.file_included.nil? || project.file_included==''
+                excs = project.file_excludable.split(';')
+                Find.find(localStorePath) do |path|
+                    unless path==localStorePath
+                        real_path = path.gsub(localStorePath,'')
+                        isMV = true
+                        excs.each do |exc|
+                            if real_path.start_with? "/#{exc}"
+                                isMV = false
+                            end
+                        end
+                        if real_path.start_with? "/.git"
+                            isMV = false
+                        end
+                        FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
+                    end
+                end
+            else
+                includes = project.file_included.split(';')
+                Find.find(localStorePath) do |path|
+                    unless path==localStorePath
+                        real_path = path.gsub(localStorePath,'')
+                        isMV = false
+                        includes.each do |exc|
+                            if real_path.start_with? "/#{exc}"
+                                isMV = true
+                            end
+                        end
+                        FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
+                    end
+                end
+            end
+
             response.live_push "写入附加文件 ..."
+            FileUtils.cd(tmpStorePath)
             project_extend_files = project.project_extend_files
             project_extend_files.each do |project_extend_file|
                 tname = project_extend_file.filename
@@ -219,30 +260,6 @@ class LiveController < ApplicationController
                 aFile = File.new(project_extend_file.filename, "w+")
                 aFile.syswrite(project_extend_file.content)
                 aFile.close
-            end
-
-            response.live_push "准备文件 ..."
-            tmpStorePath = "#{localStorePath}.tmp"
-            if Dir.exist?(tmpStorePath)
-                FileUtils.rm_rf(tmpStorePath)
-            end
-            FileUtils.mkdir_p(tmpStorePath)
-            excs = project.file_excludable.split(';')
-
-            Find.find(localStorePath) do |path|
-                unless path==localStorePath
-                    real_path = path.gsub(localStorePath,'')
-                    isMV = true
-                    excs.each do |exc|
-                        if real_path.start_with? "/#{exc}"
-                            isMV = false
-                        end
-                    end
-                    if real_path.start_with? "/.git"
-                        isMV = false
-                    end
-                    FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
-                end
             end
 
             response.live_push "文件准备完成 ..."

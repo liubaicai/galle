@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_21_111501) do
+ActiveRecord::Schema.define(version: 2019_01_25_081829) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 2019_01_21_111501) do
     t.string "task_post_deploy"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "file_included"
   end
 
   create_table "publisher_servers", force: :cascade do |t|

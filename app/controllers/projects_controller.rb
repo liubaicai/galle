@@ -47,7 +47,7 @@ class ProjectsController < ApplicationController
     private
     def project_params
         params.require(:project).permit(
-            :title, :description, :git_url, :git_version, :file_excludable,
+            :title, :description, :git_url, :git_version, :file_included, :file_excludable,
             :local_store_path, :target_deploy_path, :target_backup_path, :task_pre_checkout, 
             :task_post_checkout, :task_pre_deploy, :task_post_deploy
         )
