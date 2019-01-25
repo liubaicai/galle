@@ -46,7 +46,7 @@
       </td>
       <td>
       <% if publisher.published %>
-        <%= publisher.publish_time %>
+        <%= publisher.publish_time.getlocal %>
       <% else %>
         --
       <% end %>

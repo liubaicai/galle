@@ -7,3 +7,8 @@ if Machine.commond('uname') == 'Linux'
         Rails.cache.write('local_cpu_usage', Machine::CPU.usage)
     end
 end
+
+Rails.cache.write('local_server_status', Machine.status.to_json)
+scheduler.every '10m' do
+    Rails.cache.write('local_server_status', Machine.status.to_json)
+end
