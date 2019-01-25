@@ -3,8 +3,6 @@ Rails.application.routes.draw do
     
     root 'control_panel#index'
 
-    get 'board' => 'control_panel#board'
-
     get 'users/login'
     get 'users/logout'
     post 'users/login' => 'users#login_post'

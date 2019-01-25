@@ -1,4 +1,8 @@
 
+<% content_for :servers_slide_active do %>
+  active
+<% end %>
+
 <%= form_for @server, url: {action: "create"} do |f| %>
   <div class="form-group">
     <label>地址</label>

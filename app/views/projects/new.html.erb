@@ -1,3 +1,8 @@
+
+<% content_for :projects_slide_active do %>
+  active
+<% end %>
+
 <%= form_for @project, url: {action: "create"} do |f| %>
   <div class="form-group">
     <label>Title</label>

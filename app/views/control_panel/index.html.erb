@@ -1,127 +1,58 @@
 
 <style>
-    /*.fade-enter-active, .fade-leave-active {*/
-        /*transition: opacity .5s*/
-    /*}*/
-    /*.fade-enter, .fade-leave-to !* .fade-leave-active in below version 2.1.8 *! {*/
-        /*opacity: 0*/
-    /*}*/
+  .table tbody tr td{
+    vertical-align: middle;
+  }
+  .table tbody tr th{
+    vertical-align: middle;
+  }
 </style>
 
 <div id="app">
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <%= link_to 'Galle', root_path, class: "navbar-brand" %>
-                <div v-if="is_show_jumbotron===false" class="navbar-text">a project deployment platform</div>
-            </div>
-            <% unless @current_user.nil? %>
-                <div class="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= @current_user.username %> <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                              <% if @current_user.level>100 %>
-                                <li style="margin: 6px 0 6px 0;"><a href="/settings/sshkey">SSHKey</a></li>
-                              <% end %>
-                                <li style="margin: 6px 0 6px 0;"><a href="/users/changepwd">修改密码</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="/users/logout">注销</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            <% end %>
-        </div>
-    </nav>
-<!--    <transition name="fade">-->
-<!--        <div v-if="is_show_jumbotron" class="jumbotron">-->
-<!--            <h1>Galle</h1>-->
-<!--            <p>A project deployment platform </p>-->
-<!--        </div>-->
-<!--    </transition>-->
-    <div>
-        <ul class="nav nav-pills nav-stacked col-md-3">
-        <% if @current_user.level>100 %>
-            <li role="presentation" :class="user_nav_class"><a @click="loadChildFrame('/users');user_nav_class='active';project_nav_class='';server_nav_class='';publisher_nav_class=''">用户</a></li>
-            <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');user_nav_class='';project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
-            <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');user_nav_class='';project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器</a></li>
-            <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');user_nav_class='';project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布</a></li>
-        <% else %>
-            <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
-            <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器</a></li>
-            <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布</a></li>
-        <% end %>
-        </ul>
-
-        <div class="col-md-9 embed-responsive embed-responsive-4by3" style="padding-bottom: 100%;">
-            <iframe id='frame' src="/board" frameborder="0" style="width: 100%;overflow: hidden;min-height: 600px;" ></iframe>
-        </div>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      {{ local_server_status.system.description }} | {{ local_server_status.cpu.model }} |
+      {{ (parseInt(local_server_status.memory.mem)/1073741824).toFixed(2) }}G
     </div>
+  </div>
+
+  <div class="panel panel-warning" onclick="window.location = '/publishers'">
+    <div class="panel-heading">
+      <h3 class="panel-title">未完成的发布</h3>
+    </div>
+    <div class="panel-body">
+      <% @publishers.each do |publisher| %>
+        <button type="button" class="btn btn-default" style="margin: 2px 0 2px 0" onclick="window.location = '/publishers'">
+          <%= publisher.title %>  <span class="label label-default"><%= publisher.project.title %></span>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">最近的活动</h3>
+    </div>
+    <div class="panel-body list-group">
+      <% @logs.each do |log| %>
+        <li class="list-group-item">
+          <span class="text-primary"><%= log.user.username %></span>
+          @<span class="text-muted"><%= log.created_at.getlocal %></span>:
+          <span class="text-danger"><%= log.job %></span>-
+          <span class="text-muted"><%= log.target %></span>
+        </li>
+      <% end %>
+    </div>
+  </div>
 </div>
 
 <script>
-var app = new Vue({
-    el: '#app',
-    data: {
-        is_show_jumbotron: false,
-        child_frame_src: '/board',
-        user_nav_class: '',
-        project_nav_class: '',
-        server_nav_class: '',
-        publisher_nav_class: '',
-    },
-    created: function () {
-        //let that = this
-        //this.$http.get('/status/cpu').then(function(res){
-        //    that.cpu = res.data
-        //})
-        //setInterval( () => {
-        //    this.$http.get('/status/cpu').then(function(res){
-        //        that.cpu = res.data
-        //    })
-        //}, 10000)
-        // setTimeout(() => {
-        //     this.is_show_jumbotron = false
-        // }, 1000)
-        // setInterval( () => {
-        //     let iurl = document.getElementById('frame').contentWindow.location.href
-        //     if(iurl.indexOf("/board") != -1){
-        //         this.user_nav_class='';
-        //         this.project_nav_class='';
-        //         this.server_nav_class='';
-        //         this.publisher_nav_class=''
-        //     }
-        //     else if(iurl.indexOf("/users") != -1){
-        //         this.user_nav_class='active';
-        //         this.project_nav_class='';
-        //         this.server_nav_class='';
-        //         this.publisher_nav_class=''
-        //     }
-        //     else if(iurl.indexOf("/projects") != -1){
-        //         this.user_nav_class='';
-        //         this.project_nav_class='active';
-        //         this.server_nav_class='';
-        //         this.publisher_nav_class=''
-        //     }
-        //     else if(iurl.indexOf("/servers") != -1){
-        //         this.user_nav_class='';
-        //         this.project_nav_class='';
-        //         this.server_nav_class='active';
-        //         this.publisher_nav_class=''
-        //     }
-        //     else if(iurl.indexOf("/publishers") != -1){
-        //         this.user_nav_class='';
-        //         this.project_nav_class='';
-        //         this.server_nav_class='';
-        //         this.publisher_nav_class='active'
-        //     }
-        // }, 3000)
-    },
-    methods: {
-        loadChildFrame: function (src) {
-            document.getElementById('frame').contentWindow.location = src
+    var app = new Vue({
+        el: '#app',
+        data: {
+            local_server_status: <%== @local_server_status %>,
         },
-    }
-})
+        created: function () {
+        },
+    })
 </script>

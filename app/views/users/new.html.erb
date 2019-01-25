@@ -1,4 +1,8 @@
 
+<% content_for :users_slide_active do %>
+  active
+<% end %>
+
 <%= form_tag controller: "users", action: "create", method: "post" do %>
     <div class="form-group">
         <label>用户名</label>

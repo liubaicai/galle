@@ -1,4 +1,8 @@
 
+<% content_for :publishers_slide_active do %>
+  active
+<% end %>
+
 <%= form_for [@project, @project.publishers.build], url: {action: "create"} do |f| %>
   <%= f.text_field :project_id, class: "hidden" %>
   <div class="form-group">
