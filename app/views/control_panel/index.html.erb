@@ -17,9 +17,19 @@
             </div>
             <% unless @current_user.nil? %>
                 <div class="navbar-collapse">
-                    <p class="navbar-text navbar-right">
-                        你好,  <%= @current_user.username %> | <a href="/users/changepwd" class="navbar-link">修改密码</a> | <a href="/users/logout" class="navbar-link">注销</a>
-                    </p>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= @current_user.username %> <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                              <% if @current_user.level>100 %>
+                                <li style="margin: 6px 0 6px 0;"><a href="/settings/sshkey">SSHKey</a></li>
+                              <% end %>
+                                <li style="margin: 6px 0 6px 0;"><a href="/users/changepwd">修改密码</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/users/logout">注销</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             <% end %>
         </div>
@@ -37,7 +47,6 @@
             <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');user_nav_class='';project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
             <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');user_nav_class='';project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器</a></li>
             <li role="presentation" :class="publisher_nav_class"><a @click="loadChildFrame('/publishers');user_nav_class='';project_nav_class='';server_nav_class='';publisher_nav_class='active'">发布</a></li>
-            <li><a href="/settings/sshkey" target="_self">SSHKey</a></li>
         <% else %>
             <li role="presentation" :class="project_nav_class"><a @click="loadChildFrame('/projects');project_nav_class='active';server_nav_class='';publisher_nav_class=''">项目</a></li>
             <li role="presentation" :class="server_nav_class"><a @click="loadChildFrame('/servers');project_nav_class='';server_nav_class='active';publisher_nav_class=''">服务器</a></li>

@@ -37,6 +37,8 @@ class SettingsController < ApplicationController
       File.chmod(0600,"#{private_key_path}")
       File.chmod(0600,"#{public_key_path}")
 
+      Log.create_log(@current_user.id, 'ReGenerateSSHKey', "")
+
       @public_key = publicKey
       render "sshkey"
     end

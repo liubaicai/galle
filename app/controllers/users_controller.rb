@@ -5,7 +5,7 @@ class UsersController < ApplicationController
         if @current_user.level<100
             render plain: '你没有权限'
         else
-            @users = User.all
+            @users = User.where("level < ?", 100)
         end
     end
 
