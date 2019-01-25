@@ -30,6 +30,7 @@
                 <button type="button" class="btn btn-success" onclick="CheckProject(<%= project.id %>)">检测</button>
                 <%= link_to '查看', project_path(project), type: "button", class: "btn btn-default" %>
                 <%= link_to '编辑', edit_project_path(project), type: "button", class: "btn btn-default" %>
+                <%= link_to '复制', "/projects/copy/#{project.id}", method: :post, data: { confirm: 'Are you sure?' }, type: "button", class: "btn btn-default" %>
                 <%= link_to '删除', project_path(project), method: :delete, data: { confirm: 'Are you sure?' }, type: "button", class: "btn btn-danger" %>
             </td>
             <td><%= link_to '发布', new_publisher_path+"?project_id="+project.id.to_s, type: "button", class: "btn btn-primary" %></td>

@@ -68,6 +68,13 @@ class ProjectsController < ApplicationController
         redirect_to projects_path
     end
 
+    def copy
+        project = Project.find(params[:id])
+        new_project = project.dup
+        new_project.save
+        redirect_to projects_path
+    end
+
     private
 
     def project_params

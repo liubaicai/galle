@@ -9,7 +9,9 @@ Rails.application.routes.draw do
     post 'users/logout' => 'users#logout_post'
     get 'users/changepwd'
     post 'users/changepwd' => 'users#changepwd_post'
-    
+
+    post 'projects/copy/:id' => 'projects#copy'
+
     resources :servers
     resources :projects
     resources :publishers
