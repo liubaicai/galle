@@ -1,4 +1,4 @@
-Edit Project
+
 <%= form_for @project, url: {action: "update"} do |f| %>
   <div class="form-group">
     <label>Title</label>
@@ -47,6 +47,18 @@ Edit Project
   <div class="form-group">
     <label>TaskPostDeploy</label>
     <%= f.text_field :task_post_deploy, type: "text", class: "form-control", placeholder: "部署后脚本任务，以;分隔" %>
+  </div>
+  <div class="form-group">
+    <label>目标服务器</label>
+    <select id='publisher_servers' name='publisher_servers[]' multiple='multiple' size='10' class="form-control">
+      <% @servers.each do |server| %>
+        <% if check_is_in_project_servers(server, @project.publisher_servers) %>
+          <option selected value="<%= server.id %>"><%= server.address %>:<%= server.port %></option>
+        <% else %>
+          <option value="<%= server.id %>"><%= server.address %>:<%= server.port %></option>
+        <% end %>
+      <% end %>
+    </select>
   </div>
   <%= f.submit "修改", class: "btn btn-primary" %>
   <%= link_to '取消', projects_path, type: "button", class: "btn btn-default" %>

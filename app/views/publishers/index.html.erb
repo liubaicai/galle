@@ -29,10 +29,10 @@
                   onmouseover="document.getElementById('menu<%= publisher.id %>').style.display='block'"
                   onmouseout="document.getElementById('menu<%= publisher.id %>').style.display='none'"
           >
-            共<%= publisher.publisher_servers.size %>台服务器
+            共<%= publisher.project.publisher_servers.size %>台服务器
           </button>
           <ul id="menu<%= publisher.id %>" class="dropdown-menu">
-            <% publisher.publisher_servers.each do |server| %>
+            <% publisher.project.publisher_servers.each do |server| %>
               <% unless server.server.nil? %>
                 <li class="list-group-item"><%= server.server.address %>:<%= server.server.port %></li>
               <% end %>

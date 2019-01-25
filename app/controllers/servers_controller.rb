@@ -29,8 +29,6 @@ class ServersController < ApplicationController
     def destroy
         server = Server.find(params[:id])
         server.destroy
-        publish_servers = PublisherServer.where(server_id: server.id)
-        publish_servers.destroy_all
         Log.create_log(@current_user.id, 'DeleteServer', "#{server.address}:#{server.port}")
         redirect_to servers_path
     end

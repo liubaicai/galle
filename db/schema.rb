@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_25_081829) do
+ActiveRecord::Schema.define(version: 2019_01_25_093841) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
@@ -49,11 +49,11 @@ ActiveRecord::Schema.define(version: 2019_01_25_081829) do
   end
 
   create_table "publisher_servers", force: :cascade do |t|
-    t.integer "publisher_id"
     t.integer "server_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["publisher_id"], name: "index_publisher_servers_on_publisher_id"
+    t.integer "project_id"
+    t.index ["project_id"], name: "index_publisher_servers_on_project_id"
     t.index ["server_id"], name: "index_publisher_servers_on_server_id"
   end
 

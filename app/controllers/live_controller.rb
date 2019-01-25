@@ -263,9 +263,9 @@ class LiveController < ApplicationController
             end
 
             response.live_push "文件准备完成 ..."
-            response.live_push "共发布到"+publisher.publisher_servers.size.to_s+"台服务器 ..."
+            response.live_push "共发布到"+project.publisher_servers.size.to_s+"台服务器 ..."
 
-            publisher.publisher_servers.each do |publisher_server|
+            project.publisher_servers.each do |publisher_server|
                 server = publisher_server.server
                 response.live_push "开始连接到‘#{server.address}:#{server.port}‘ ..."
 

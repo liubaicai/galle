@@ -18,6 +18,14 @@
   </div>
 </div>
 <div class="list-group">
+  <li class="list-group-item disabled">目标服务器:</li>
+  <% @project.publisher_servers.each do |server| %>
+    <li class="list-group-item">
+      <%= server.server.address %>:<%= server.server.port %>
+    </li>
+  <% end %>
+</div>
+<div class="list-group">
   <li class="list-group-item disabled">附加文件:</li>
   <% @project.project_extend_files.each do |file| %>
     <li class="list-group-item">
@@ -29,5 +37,5 @@
 
 <%= link_to '发布', new_publisher_path+"?project_id="+@project.id.to_s, type: "button", class: "btn btn-primary" %>
 <%= link_to '新建附加文件', new_project_extend_file_path+'?project_id='+@project.id.to_s, class: "btn btn-default" %>
-
+<%= link_to '编辑', edit_project_path(@project), type: "button", class: "btn btn-default" %>
 <%= link_to '返回列表', projects_path, type: "button", class: "btn btn-default" %>
