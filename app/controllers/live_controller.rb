@@ -265,11 +265,21 @@ class LiveController < ApplicationController
             response.live_push "文件准备完成 ..."
             response.live_push "共发布到"+project.publisher_servers.size.to_s+"台服务器 ..."
 
+
+            ssh_path = Rails.root.join('tmp', '.ssh', 'id_rsa')
+            project.publisher_servers.each do |publisher_server|
+                Net::SSH.start(publisher_server.address, publisher_server.username,:port => publisher_server.port,
+                               :keys => ["#{ssh_path}"], :timeout => 10, :non_interactive => true,
+                               :config => false, :user_known_hosts_file => []) do |ssh|
+                    ssh.exec!("mkdir -p #{server.monitor_path}")
+                    response.live_push "‘#{publisher_server.address}:#{publisher_server.port}‘连接成功 ..."
+                end
+            end
+
             project.publisher_servers.each do |publisher_server|
                 server = publisher_server.server
-                response.live_push "开始连接到‘#{server.address}:#{server.port}‘ ..."
+                response.live_push "开始部署到‘#{server.address}:#{server.port}‘ ..."
 
-                ssh_path = Rails.root.join('tmp', '.ssh', 'id_rsa')
                 Net::SFTP.start(server.address, server.username,:port => server.port, :password => server.password,
                                 :keys => ["#{ssh_path}"], :timeout => 10, :non_interactive => true,
                                 :config => false, :user_known_hosts_file => [])  do |sftp|

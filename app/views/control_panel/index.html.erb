@@ -24,7 +24,7 @@
             <div class="panel-body">
                 <% @publishers.each do |publisher| %>
                     <button type="button" class="btn btn-default" style="margin: 2px 0 2px 0" onclick="window.location = '/publishers'">
-                        <%= publisher.title %>  <span class="label label-default"><%= publisher.project.title %></span>
+                        <%= publisher.title %>  <span class="label label-default"><%= publisher.project.title unless publisher.project.nil? %></span>
                     </button>
                 <% end %>
             </div>
@@ -38,7 +38,7 @@
         <div class="panel-body list-group">
             <% @logs.each do |log| %>
                 <li class="list-group-item">
-                    <span class="text-primary"><%= log.user.username %></span>
+                    <span class="text-primary"><%= log.user.username unless log.user.nil? %></span>
                     @<span class="text-muted"><%= log.created_at.getlocal %></span>:
                     <span class="text-danger"><%= log.job %></span>-
                     <span class="text-muted"><%= log.target %></span>
