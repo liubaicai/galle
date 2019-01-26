@@ -268,11 +268,11 @@ class LiveController < ApplicationController
 
             ssh_path = Rails.root.join('tmp', '.ssh', 'id_rsa')
             project.publisher_servers.each do |publisher_server|
-                Net::SSH.start(publisher_server.address, publisher_server.username,:port => publisher_server.port,
+                Net::SSH.start(publisher_server.server.address, publisher_server.server.username,:port => publisher_server.server.port,
                                :keys => ["#{ssh_path}"], :timeout => 10, :non_interactive => true,
                                :config => false, :user_known_hosts_file => []) do |ssh|
-                    ssh.exec!("mkdir -p #{server.monitor_path}")
-                    response.live_push "‘#{publisher_server.address}:#{publisher_server.port}‘连接成功 ..."
+                    ssh.exec!("mkdir -p #{publisher_server.server.monitor_path}")
+                    response.live_push "‘#{publisher_server.server.address}:#{publisher_server.server.port}‘连接成功 ..."
                 end
             end
 

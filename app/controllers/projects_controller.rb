@@ -62,10 +62,6 @@ class ProjectsController < ApplicationController
     def destroy
         project = Project.find(params[:id])
         project.destroy
-        publish_servers = PublisherServer.where(project_id: project.id)
-        publish_servers.destroy_all
-        publishers = Publisher.where(project_id: project.id)
-        publishers.destroy_all
         Log.create_log(@current_user.id, 'DeleteProject', "#{project.title}:#{project.description}")
         redirect_to projects_path
     end
