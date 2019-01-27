@@ -1,68 +1,67 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <title>Galle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
+    <title>Galle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
 
-  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue-resource/dist/vue-resource.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource/dist/vue-resource.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
 </head>
 
 <body>
 <div class="container">
-  <div id="app">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <%= link_to 'Galle', root_path, class: "navbar-brand" %>
-          <div class="navbar-text">a project deployment platform</div>
-        </div>
-        <% unless @current_user.nil? %>
-          <div class="navbar-collapse">
-            <ul class="nav navbar-nav navbar-right">
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= @current_user.username %>
-                  <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <% if @current_user.level > 100 %>
-                    <li style="margin: 6px 0 6px 0;"><a href="/settings/sshkey">SSHKey</a></li>
-                  <% end %>
-                  <li style="margin: 6px 0 6px 0;"><a href="/users/changepwd">修改密码</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="/users/logout">注销</a></li>
+    <div id="app">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <%= link_to 'Galle', root_path, class: "navbar-brand" %>
+                    <div class="navbar-text">a project deployment platform</div>
+                </div>
+                <% unless @current_user.nil? %>
+                    <div class="navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= @current_user.username %>
+                                    <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li style="margin: 6px 0 6px 0;"><a href="/settings/sshkey">SSHKey</a></li>
+                                    <li style="margin: 6px 0 6px 0;"><a href="/users/changepwd">修改密码</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="/users/logout">注销</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                <% end %>
+            </div>
+        </nav>
+        <div>
+            <% unless @current_user.nil? %>
+                <ul class="nav nav-pills nav-stacked col-md-3">
+                    <% if @current_user.level > 100 %>
+                        <li role="presentation" class="<%= yield :users_slide_active %>"><a href="/users">用户</a></li>
+                    <% end %>
+                    <li role="presentation" class="<%= yield :projects_slide_active %>"><a href="/projects">项目</a></li>
+                    <li role="presentation" class="<%= yield :servers_slide_active %>"><a href="/servers">服务器</a></li>
+                    <li role="presentation" class="<%= yield :publishers_slide_active %>"><a href="/publishers">发布</a>
+                    </li>
                 </ul>
-              </li>
-            </ul>
-          </div>
-        <% end %>
-      </div>
-    </nav>
-    <div>
-      <% unless @current_user.nil? %>
-        <ul class="nav nav-pills nav-stacked col-md-3">
-          <% if @current_user.level > 100 %>
-            <li role="presentation" class="<%= yield :users_slide_active %>"><a href="/users">用户</a></li>
-          <% end %>
-          <li role="presentation" class="<%= yield :projects_slide_active %>"><a href="/projects">项目</a></li>
-          <li role="presentation" class="<%= yield :servers_slide_active %>"><a href="/servers">服务器</a></li>
-          <li role="presentation" class="<%= yield :publishers_slide_active %>"><a href="/publishers">发布</a></li>
-        </ul>
-      <% end %>
+            <% end %>
 
-      <div class="col-md-9" style="margin-bottom: 20px">
-        <%= yield %>
-      </div>
+            <div class="col-md-9" style="margin-bottom: 20px">
+                <%= yield %>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 </body>
 </html>

@@ -39,8 +39,7 @@
                         <% unless publisher.project.nil? %>
                             <% publisher.project.publisher_servers.each do |server| %>
                                 <% unless server.server.nil? %>
-                                    <li class="list-group-item"><%= server.server.address %>
-                                        :<%= server.server.port %></li>
+                                    <li class="list-group-item"><%= server.server.address %></li>
                                 <% end %>
                             <% end %>
                         <% end %>
