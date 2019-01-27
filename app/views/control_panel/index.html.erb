@@ -9,7 +9,7 @@
 </style>
 
 <div id="app">
-    <div class="panel panel-default">
+    <div v-if="local_server_status.system.description=='Linux'" class="panel panel-default">
         <div class="panel-body">
             {{ local_server_status.system.description }} | {{ local_server_status.cpu.model }} |
             {{ (parseInt(local_server_status.memory.mem)/1073741824).toFixed(2) }}G
