@@ -21,7 +21,7 @@
     <%= f.text_field :password, type: "text", class: "form-control", placeholder: "密码" %>
   </div>
   <div class="form-group">
-    <label>探测路径</label>
+    <label>探测路径，用以检测服务器连接</label>
     <%= f.text_field :monitor_path, type: "text", class: "form-control", placeholder: "服务器探测路径，如：~/.galle", value: "~/.galle" %>
   </div>
   <%= f.submit "新建", class: "btn btn-primary" %>
