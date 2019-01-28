@@ -81,6 +81,8 @@ class LiveController < ApplicationController
                 
                     response.live_push "检出'#{project.git_version}'版本 ..."
                     git.checkout project.git_version
+
+                    do_shell 'git submodule init;git submodule update'
     
                 else
                     
@@ -96,7 +98,9 @@ class LiveController < ApplicationController
 
                     response.live_push "检出'#{project.git_version}'版本 ..."
                     git.checkout project.git_version
-        
+
+                    do_shell 'git submodule init;git submodule update'
+
                 end
             else
 
@@ -105,6 +109,8 @@ class LiveController < ApplicationController
 
                 response.live_push "检出'#{project.git_version}'版本 ..."
                 git.checkout project.git_version
+
+                do_shell 'git submodule init;git submodule update'
     
             end
 
@@ -173,6 +179,7 @@ class LiveController < ApplicationController
                     response.live_push "检出'#{project.git_version}'版本 ..."
                     git.checkout project.git_version
 
+                    do_shell 'git submodule init;git submodule update'
 
                 else
 
@@ -189,6 +196,8 @@ class LiveController < ApplicationController
                     response.live_push "检出'#{project.git_version}'版本 ..."
                     git.checkout project.git_version
 
+                    do_shell 'git submodule init;git submodule update'
+
                 end
             else
 
@@ -197,6 +206,8 @@ class LiveController < ApplicationController
 
                 response.live_push "检出'#{project.git_version}'版本 ..."
                 git.checkout project.git_version
+
+                do_shell 'git submodule init;git submodule update'
 
             end
 

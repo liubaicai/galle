@@ -11,7 +11,7 @@ class ServersController < ApplicationController
     def create
         server = Server.new(server_params)
         if server.rc_file_path.nil? || server.rc_file_path==''
-            server.rc_file_path = '~/.zshrc'
+            server.rc_file_path = '~/.bashrc'
         end
         server.save
         Log.create_log(@current_user.id, 'CreateServer', "#{server.address}:#{server.port}")
@@ -26,7 +26,7 @@ class ServersController < ApplicationController
         server = Server.find(params[:id])
         server.update(server_params)
         if server.rc_file_path.nil? || server.rc_file_path==''
-            server.rc_file_path = '~/.zshrc'
+            server.rc_file_path = '~/.bashrc'
             server.save
         end
         Log.create_log(@current_user.id, 'UpdateServer', "#{server.address}:#{server.port}")
