@@ -239,7 +239,11 @@ class LiveController < ApplicationController
                         if real_path.start_with? "/.git"
                             isMV = false
                         end
-                        FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
+                        if File.directory?(path)
+                            FileUtils.mkdir_p("#{tmpStorePath}#{real_path}") if isMV
+                        else
+                            FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
+                        end
                     end
                 end
             else
@@ -253,7 +257,11 @@ class LiveController < ApplicationController
                                 isMV = true
                             end
                         end
-                        FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
+                        if File.directory?(path)
+                            FileUtils.mkdir_p("#{tmpStorePath}#{real_path}") if isMV
+                        else
+                            FileUtils.cp_r(path, "#{tmpStorePath}#{real_path}") if isMV
+                        end
                     end
                 end
             end
