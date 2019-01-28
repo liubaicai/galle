@@ -16,9 +16,7 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
-!/tmp/pids
 !/tmp/pids/.keep
-!/tmp/sockets
 !/tmp/sockets/.keep
 
 # Ignore uploaded files in development
