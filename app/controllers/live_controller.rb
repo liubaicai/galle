@@ -140,9 +140,10 @@ class LiveController < ApplicationController
 
         project = publisher.project
 
-        while Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
+        if Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
             response.live_push "等待其他任务完成 ..."
-            sleep 3
+            response.live_close
+            return
         end
 
         Rails.cache.write('local_shell_running', true)
@@ -309,7 +310,7 @@ class LiveController < ApplicationController
                     response.live_push "执行部署前置任务 ..."
                     unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
                         project.task_pre_deploy.split(';').each do |command|
-                            sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                            sftp.session.exec!("source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
                                 response.live_push data
                             end
                         end
@@ -321,7 +322,7 @@ class LiveController < ApplicationController
                     response.live_push "执行部署后置任务 ..."
                     unless project.task_post_deploy.nil? || project.task_post_deploy == ""
                         project.task_post_deploy.split(';').each do |command|
-                            sftp.session.exec!("cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                            sftp.session.exec!("source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
                                 response.live_push data
                             end
                         end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_25_093841) do
+ActiveRecord::Schema.define(version: 2019_01_28_073523) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 2019_01_25_093841) do
     t.string "monitor_path"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "rc_file_path"
   end
 
   create_table "users", force: :cascade do |t|

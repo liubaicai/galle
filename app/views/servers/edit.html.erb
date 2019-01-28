@@ -16,6 +16,10 @@
     <label>用户名</label>
     <%= f.text_field :username, type: "text", class: "form-control", placeholder: "用户名" %>
   </div>
+  <div class="form-group">
+    <label>环境变量文件路径，如'~/.zshrc', 默认为'~/.zshrc'</label>
+    <%= f.text_field :rc_file_path, type: "text", class: "form-control", placeholder: "环境变量文件，如'~/.zshrc'" %>
+  </div>
   <div class="hidden form-group">
     <label>密码</label>
     <%= f.text_field :password, type: "text", class: "form-control", placeholder: "密码" %>
