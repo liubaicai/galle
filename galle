@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+start() {
+    rvm use default do ruby sbin/puma -d -C config/puma-deploy.rb
+    echo "=== puma startup: $(date +'%Y-%m-%d %H:%M:%S %z') ==="
+}
+
+stop() {
+    test -r tmp/pids/puma.pid && {
+        kill -9 `cat tmp/pids/puma.pid`
+        rm tmp/pids/puma.pid
+        echo "=== puma shutdown: $(date +'%Y-%m-%d %H:%M:%S %z') ==="
+    }
+}
+
+install() {
+    rvm use default do bundle install
+    rvm use default do rails db:migrate RAILS_ENV=production
+    rvm use default do rails db:seed RAILS_ENV=production
+    rvm use default do rails assets:precompile
+}
+
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        sleep 1
+        start
+        ;;
+    install)
+        install
+        ;;
+    *)
+        echo "Usage: galle {start|stop|restart|install}"
+        exit 3
+        ;;
+esac
