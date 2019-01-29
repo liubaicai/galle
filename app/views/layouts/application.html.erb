@@ -11,15 +11,22 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-resource/dist/vue-resource.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <% if isDev %>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource/dist/vue-resource.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.js"></script>
+    <% else %>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource/dist/vue-resource.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <% end %>
 </head>
 
 <body>
 <div class="container">
-    <div id="app">
+    <div>
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
