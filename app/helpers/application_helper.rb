@@ -1,8 +1,7 @@
 module ApplicationHelper
 
     def isDev
-        environment = ENV.fetch("RAILS_ENV") { "development" }
-        if environment=='production'
+        if Rails.env=='production'
             return false
         end
         return true
