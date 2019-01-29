@@ -305,6 +305,15 @@ class LiveController < ApplicationController
                                 :config => false, :user_known_hosts_file => [])  do |sftp|
 
 
+                    response.live_push "执行部署前置任务 ..."
+                    unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
+                        project.task_pre_deploy.split(';').each do |command|
+                            sftp.session.exec!("source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
+                                response.live_push data
+                            end
+                        end
+                    end
+
                     response.live_push "准备备份文件 ..."
                     current_backup = "#{project.target_backup_path}/#{publisher.id}"
                     sftp.session.exec!("mkdir -p #{current_backup}")
@@ -325,15 +334,6 @@ class LiveController < ApplicationController
                     sftp.session.exec!("mkdir -p #{current_backup}")
                     sftp.session.exec!("rm -rf #{project.target_deploy_path}")
                     sftp.session.exec!("ln -sf #{current_backup} #{project.target_deploy_path}")
-
-                    response.live_push "执行部署前置任务 ..."
-                    unless project.task_pre_deploy.nil? || project.task_pre_deploy == ""
-                        project.task_pre_deploy.split(';').each do |command|
-                            sftp.session.exec!("source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}") do |channel, stream, data|
-                                response.live_push data
-                            end
-                        end
-                    end
 
                     response.live_push "正在发布文件 ..."
                     sftp.upload!(tmpStorePath, project.target_deploy_path)
