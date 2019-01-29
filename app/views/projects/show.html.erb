@@ -5,24 +5,24 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title"><%= @project.title %></h3>
+    <h3 class="panel-title"><span class="text-danger">(必填)</span><%= @project.title %></h3>
   </div>
   <div class="panel-body">
-    description: <%= @project.description %><br>
-    git_url: <%= @project.git_url %><br>
-    git_version: <%= @project.git_version %><br>
-    file_included: <%= @project.file_included %><br>
-    file_excludable: <%= @project.file_excludable %><br>
-    target_deploy_path: <%= @project.target_deploy_path %><br>
-    target_backup_path: <%= @project.target_backup_path %><br>
-    task_pre_checkout: <%= @project.task_pre_checkout %><br>
-    task_post_checkout: <%= @project.task_post_checkout %><br>
-    task_pre_deploy: <%= @project.task_pre_deploy %><br>
-    task_post_deploy: <%= @project.task_post_deploy %><br>
+      项目描述: <%= @project.description %><br>
+      <span class="text-danger">(必填)</span>Git仓库地址: <%= @project.git_url %><br>
+      代码版本: <%= @project.git_version %><br>
+      仅包括文件: <%= @project.file_included %><br>
+      排除文件: <%= @project.file_excludable %><br>
+      <span class="text-danger">(必填)</span>部署路径: <%= @project.target_deploy_path %><br>
+      <span class="text-danger">(必填)</span>备份路径: <%= @project.target_backup_path %><br>
+      检出前脚本: <%= @project.task_pre_checkout %><br>
+      检出后脚本: <%= @project.task_post_checkout %><br>
+      部署前脚本: <%= @project.task_pre_deploy %><br>
+      部署后脚本: <%= @project.task_post_deploy %><br>
   </div>
 </div>
 <div class="list-group">
-  <li class="list-group-item disabled">目标服务器:</li>
+  <li class="list-group-item disabled"><span class="text-danger">(必填)</span>目标服务器:</li>
   <% @project.publisher_servers.each do |server| %>
     <li class="list-group-item">
       <%= server.server.address %>:<%= server.server.port %>

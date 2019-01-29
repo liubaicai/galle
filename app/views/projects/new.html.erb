@@ -5,7 +5,7 @@
 
 <%= form_for @project, url: {action: "create"} do |f| %>
     <div class="form-group">
-        <label>(必填)项目名称</label>
+        <label><span class="text-danger">(必填)</span>项目名称</label>
         <%= f.text_field :title, type: "text", class: "form-control", placeholder: "项目名称" %>
     </div>
     <div class="form-group">
@@ -13,7 +13,7 @@
         <%= f.text_field :description, type: "text", class: "form-control", placeholder: "项目描述" %>
     </div>
     <div class="form-group">
-        <label>(必填)Git仓库地址,格式:git@example.com:user/project.git</label>
+        <label><span class="text-danger">(必填)</span>Git仓库地址,格式:git@example.com:user/project.git</label>
         <%= f.text_field :git_url, type: "text", class: "form-control", placeholder: "Git仓库地址" %>
     </div>
     <div class="form-group">
@@ -29,31 +29,31 @@
         <%= f.text_field :file_excludable, type: "text", class: "form-control", placeholder: "排除的文件或文件夹，以;分隔" %>
     </div>
     <div class="form-group">
-        <label>(必填)目标服务器的部署路径，绝对地址，确认有权限访问，无需事先创建</label>
+        <label><span class="text-danger">(必填)</span>目标服务器的部署路径，绝对地址，确认有权限访问，无需事先创建</label>
         <%= f.text_field :target_deploy_path, type: "text", class: "form-control", placeholder: "目标部署路径" %>
     </div>
     <div class="form-group">
-        <label>(必填)目标服务器的备份路径，绝对地址，确认有权限访问，无需事先创建</label>
+        <label><span class="text-danger">(必填)</span>目标服务器的备份路径，绝对地址，确认有权限访问，无需事先创建</label>
         <%= f.text_field :target_backup_path, type: "text", class: "form-control", placeholder: "目标备份路径" %>
     </div>
     <div class="form-group">
-        <label>检出代码前执行的脚本任务，以;分隔</label>
+        <label>检出代码前执行的脚本任务，以;分隔，执行设置环境变量等操作，执行路径:galle本地临时目录</label>
         <%= f.text_field :task_pre_checkout, type: "text", class: "form-control", placeholder: "检出前脚本任务，以;分隔" %>
     </div>
     <div class="form-group">
-        <label>检出代码后执行的脚本任务，以;分隔</label>
+        <label>检出代码后执行的脚本任务，以;分隔，可以对检出的代码执行某些操作，执行路径:galle本地临时目录</label>
         <%= f.text_field :task_post_checkout, type: "text", class: "form-control", placeholder: "检出后脚本任务，以;分隔" %>
     </div>
     <div class="form-group">
-        <label>部署代码前执行的脚本任务，以;分隔</label>
+        <label>部署代码前执行的脚本任务，以;分隔，如: "mkdir -p /your/tmp/file;nginx stop"，执行路径:目标服务器旧版本部署目录</label>
         <%= f.text_field :task_pre_deploy, type: "text", class: "form-control", placeholder: "部署前脚本任务，以;分隔" %>
     </div>
     <div class="form-group">
-        <label>部署代码后执行的脚本任务，以;分隔</label>
+        <label>部署代码后执行的脚本任务，以;分隔，如: "bash galle install;nginx start"，执行路径:目标服务器当前部署版本目录</label>
         <%= f.text_field :task_post_deploy, type: "text", class: "form-control", placeholder: "部署后脚本任务，以;分隔" %>
     </div>
   <div class="form-group">
-    <label>(必填)要部署到的目标服务器，多选</label>
+    <label><span class="text-danger">(必填)</span>要部署到的目标服务器，多选</label>
     <select id='publisher_servers' name='publisher_servers[]' multiple='multiple' size='10' class="form-control">
       <% @servers.each do |server| %>
         <option value="<%= server.id %>"><%= server.address %>:<%= server.port %></option>
