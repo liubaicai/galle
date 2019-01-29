@@ -8,6 +8,8 @@ require 'find'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+Dotenv::Railtie.load
+
 module Galle
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -20,7 +22,7 @@ module Galle
   end
 end
 
-ssh_path = Rails.root.join('tmp', '.ssh')
+ssh_path = Pathname.new( ENV.fetch("SSHKey") { Rails.root.join('tmp', '.ssh').to_s })
 private_key_path = ssh_path.join('id_rsa')
 public_key_path = ssh_path.join('id_rsa.pub')
 unless File.exist? private_key_path

@@ -33,3 +33,5 @@
 # /config/master.key
 
 .idea/*
+
+.env

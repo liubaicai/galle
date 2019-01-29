@@ -1,7 +1,8 @@
 class SettingsController < ApplicationController
 
     def sshkey
-        ssh_path = Rails.root.join('tmp', '.ssh', 'id_rsa.pub')
+        ssh_root_path = Pathname.new( ENV.fetch("SSHKey") { Rails.root.join('tmp', '.ssh').to_s })
+        ssh_path = ssh_root_path.join('id_rsa.pub')
         @public_key = ''
         if File.exist? ssh_path
             @public_key = File.read(ssh_path)
@@ -18,7 +19,7 @@ class SettingsController < ApplicationController
             )
             privateKey = k.private_key
             publicKey = k.ssh_public_key
-            ssh_path = Rails.root.join('tmp', '.ssh')
+            ssh_path = Pathname.new( ENV.fetch("SSHKey") { Rails.root.join('tmp', '.ssh').to_s })
             FileUtils.mkdir_p ssh_path.to_s
             private_key_path = ssh_path.join('id_rsa')
             public_key_path = ssh_path.join('id_rsa.pub')

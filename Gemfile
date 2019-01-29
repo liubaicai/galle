@@ -77,3 +77,6 @@ gem 'net-sftp'
 
 # git工具
 gem 'git'
+
+# 环境变量加载
+gem 'dotenv-rails'
