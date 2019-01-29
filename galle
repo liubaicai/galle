@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 start() {
-    rvm use default do ruby sbin/puma -d -C config/puma-deploy.rb
+    rvm use 2.6.0 do ruby sbin/puma -d -C config/puma-deploy.rb
     echo "=== puma startup: $(date +'%Y-%m-%d %H:%M:%S %z') ==="
 }
 
 stop() {
-    test -r tmp/pids/puma.pid && {
+    test -e tmp/pids/puma.pid && {
         kill -9 `cat tmp/pids/puma.pid`
         rm tmp/pids/puma.pid
         echo "=== puma shutdown: $(date +'%Y-%m-%d %H:%M:%S %z') ==="
@@ -14,10 +14,18 @@ stop() {
 }
 
 install() {
-    rvm use default do bundle install
-    rvm use default do rails db:migrate RAILS_ENV=production
-    rvm use default do rails db:seed RAILS_ENV=production
-    rvm use default do rails assets:precompile
+    if type rvm1 >/dev/null 2>&1; then
+        rvm install 2.6.0
+        rvm use 2.6.0 do bundle install
+        rvm use 2.6.0 do rails db:migrate RAILS_ENV=production
+        rvm use 2.6.0 do rails db:seed RAILS_ENV=production
+        rvm use 2.6.0 do rails assets:precompile
+    else
+        echo >&2 "I require rvm but it's not installed.  Aborting.";
+        echo >&2 "Install RVM:";
+        echo >&2 "   \"curl -sSL https://get.rvm.io | bash -s stable --ruby=2.6.0\"";
+        exit 1;
+    fi
 }
 
 
@@ -38,6 +46,6 @@ case "$1" in
         ;;
     *)
         echo "Usage: galle {start|stop|restart|install}"
-        exit 3
+        exit 1
         ;;
 esac
