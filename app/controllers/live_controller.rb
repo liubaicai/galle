@@ -16,7 +16,7 @@ class LiveController < ApplicationController
         response.live_push "正在连接: #{server.address}:#{server.port}"
 
         begin
-            ssh_root_path = Pathname.new( ENV.fetch("SSHKey") { Rails.root.join('tmp', '.ssh').to_s })
+            ssh_root_path = Pathname.new( ENV.fetch("SSH_KEY_PATH") { Rails.root.join('tmp', '.ssh').to_s })
             ssh_path = ssh_root_path.join('id_rsa')
             Net::SSH.start(server.address, server.username,:port => server.port,
                            :keys => ["#{ssh_path}"], :timeout => 10, :non_interactive => true,
@@ -286,7 +286,7 @@ class LiveController < ApplicationController
             response.live_push "文件准备完成 ..."
             response.live_push "共发布到"+project.publisher_servers.size.to_s+"台服务器 ..."
 
-            ssh_root_path = Pathname.new( ENV.fetch("SSHKey") { Rails.root.join('tmp', '.ssh').to_s })
+            ssh_root_path = Pathname.new( ENV.fetch("SSH_KEY_PATH") { Rails.root.join('tmp', '.ssh').to_s })
             ssh_path = ssh_root_path.join('id_rsa')
             project.publisher_servers.each do |publisher_server|
                 Net::SSH.start(publisher_server.server.address, publisher_server.server.username,:port => publisher_server.server.port,

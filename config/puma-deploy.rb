@@ -12,7 +12,7 @@ rackup "#{cwd}/config.ru"
 
 pidfile "#{cwd}/tmp/pids/puma.pid"
 
-bind 'tcp://0.0.0.0:10088'
+bind "tcp://0.0.0.0:#{ENV.fetch("PORT") { 8080 }}"
 bind "unix://#{cwd}/tmp/sockets/puma.sock"
 
 plugin :tmp_restart

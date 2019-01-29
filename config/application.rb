@@ -22,7 +22,7 @@ module Galle
   end
 end
 
-ssh_path = Pathname.new( ENV.fetch("SSHKey") { Rails.root.join('tmp', '.ssh').to_s })
+ssh_path = Pathname.new( ENV.fetch("SSH_KEY_PATH") { Rails.root.join('tmp', '.ssh').to_s })
 private_key_path = ssh_path.join('id_rsa')
 public_key_path = ssh_path.join('id_rsa.pub')
 unless File.exist? private_key_path
