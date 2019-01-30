@@ -29,6 +29,13 @@ install() {
     fi
 }
 
+start-docker() {
+    rails db:migrate RAILS_ENV=production
+    rails db:seed RAILS_ENV=production
+    rails assets:precompile
+    sbin/puma -C config/puma-deploy.rb
+}
+
 
 case "$1" in
     start)
@@ -44,6 +51,9 @@ case "$1" in
         ;;
     install)
         install
+        ;;
+    start-docker)
+        start-docker
         ;;
     *)
         echo "Usage: galle {start|stop|restart|install}"

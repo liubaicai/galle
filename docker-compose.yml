@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+
+  web:
+    build: .
+    command: ./galle start-docker
+    volumes:
+      - .:/galle
+    ports:
+      - "10080:80"
