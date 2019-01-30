@@ -22,9 +22,7 @@ cd galle
 bash galle install
 bash galle start
 ~~~~
-
-## Configuration
-### production
+#### configuration
 项目目录添加.env文件(可选): 
 ~~~~
 SQLITE3=/your/path/to/db/db.sqlite3
@@ -36,6 +34,15 @@ PORT=10088
 - SSH_KEY_PATH: 项目SSH密钥存储地址,默认'tmp/.ssh'
 - RAILS_SERVE_STATIC_FILES: 是否服务静态文件,默认'false'
 - PORT: 使用galle start启动时的端口号,默认'8080'
+
+### docker
+首先安装docker和docker-compose
+编辑项目中docker-compose.yml的ports改为需要安装的端口，默认10080
+~~~
+docker-compose build
+docker-compsoe up #直接启动
+docker-compsoe up -d #后台启动
+~~~
 
 ## TODOLIST
 - 区分测试和线上环境
