@@ -36,7 +36,7 @@ PORT=10088
 - PORT: 使用galle start启动时的端口号,默认'8080'
 
 ### docker
-首先安装docker和docker-compose
+首先安装docker和docker-compose  
 编辑项目中docker-compose.yml的ports改为需要安装的端口，默认10080
 ~~~
 docker-compose build
