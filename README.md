@@ -36,9 +36,18 @@ PORT=10088
 - PORT: 使用galle start启动时的端口号,默认'8080'
 
 ### docker
-首先安装docker和docker-compose  
+首先安装docker和docker-compose，以ubuntu为例:
+~~~
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-compose
+~~~  
 编辑项目中docker-compose.yml的ports改为需要安装的端口，默认10080
 ~~~
+cd galle
 docker-compose build
 docker-compsoe up #直接启动
 docker-compsoe up -d #后台启动
