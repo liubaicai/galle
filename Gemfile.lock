@@ -67,13 +67,6 @@ GEM
     chromedriver-helper (2.1.0)
       archive-zip (~> 0.10)
       nokogiri (~> 1.8)
-    coffee-rails (4.2.2)
-      coffee-script (>= 2.2.0)
-      railties (>= 4.0.0)
-    coffee-script (2.4.1)
-      coffee-script-source
-      execjs
-    coffee-script-source (1.12.2)
     concurrent-ruby (1.1.4)
     crass (1.0.4)
     dotenv (2.6.0)
@@ -83,7 +76,6 @@ GEM
     erubi (1.8.0)
     et-orbi (1.1.7)
       tzinfo
-    execjs (2.7.0)
     ffi (1.10.0)
     ffi (1.10.0-java)
     ffi (1.10.0-x64-mingw32)
@@ -97,9 +89,6 @@ GEM
     i18n (1.5.2)
       concurrent-ruby (~> 1.0)
     io-like (0.3.0)
-    jbuilder (2.8.0)
-      activesupport (>= 4.2.0)
-      multi_json (>= 1.2)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -120,7 +109,6 @@ GEM
     msgpack (1.2.6-java)
     msgpack (1.2.6-x64-mingw32)
     msgpack (1.2.6-x86-mingw32)
-    multi_json (1.13.1)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (5.1.0)
@@ -173,17 +161,6 @@ GEM
     rubyzip (1.2.2)
     rufus-scheduler (3.5.2)
       fugit (~> 1.1, >= 1.1.5)
-    sass (3.7.3)
-      sass-listen (~> 4.0.0)
-    sass-listen (4.0.0)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
-    sass-rails (5.0.7)
-      railties (>= 4.0.0, < 6)
-      sass (~> 3.1)
-      sprockets (>= 2.8, < 4.0)
-      sprockets-rails (>= 2.0, < 4.0)
-      tilt (>= 1.1, < 3)
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
@@ -207,16 +184,10 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     thread_safe (0.3.6-java)
-    tilt (2.0.9)
-    turbolinks (5.2.0)
-      turbolinks-source (~> 5.2)
-    turbolinks-source (5.2.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     tzinfo-data (1.2018.9)
       tzinfo (>= 1.0.0)
-    uglifier (4.1.20)
-      execjs (>= 0.3.0, < 3)
     web-console (3.7.0)
       actionview (>= 5.0)
       activemodel (>= 5.0)
@@ -245,25 +216,20 @@ DEPENDENCIES
   byebug
   capybara (>= 2.15)
   chromedriver-helper
-  coffee-rails (~> 4.2)
   dotenv-rails
   git
-  jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
   net-sftp
   net-ssh
   puma (~> 3.11)
   rails (~> 5.2.2)
   rufus-scheduler
-  sass-rails (~> 5.0)
   selenium-webdriver
   spring
   spring-watcher-listen (~> 2.0.0)
   sqlite3
   sshkey
-  turbolinks (~> 5)
   tzinfo-data
-  uglifier (>= 1.3.0)
   web-console (>= 3.3.0)
   will_paginate (~> 3.1.0)
   will_paginate-bootstrap

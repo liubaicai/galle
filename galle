@@ -32,8 +32,12 @@ install() {
 start-docker() {
     rails db:migrate RAILS_ENV=production
     rails db:seed RAILS_ENV=production
-    rails assets:precompile
     sbin/puma -C config/puma-deploy.rb
+}
+
+clean-docker() {
+    docker rm $(docker ps -q -f status=exited)
+    docker rmi $(docker images -f "dangling=true" -q)
 }
 
 
@@ -55,8 +59,11 @@ case "$1" in
     start-docker)
         start-docker
         ;;
+    clean-docker)
+        clean-docker
+        ;;
     *)
-        echo "Usage: galle {start|stop|restart|install}"
+        echo "Usage: galle {start|stop|restart|install|start-docker|clean-docker}"
         exit 1
         ;;
 esac
