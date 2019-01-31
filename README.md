@@ -28,12 +28,12 @@ bash galle start
 SQLITE3=/your/path/to/db/db.sqlite3
 SSH_KEY_PATH=/your/path/to/.ssh
 RAILS_SERVE_STATIC_FILES=true
-PORT=10088
+PORT=80
 ~~~~
 - SQLITE3: 数据库文件地址,默认'db/production.sqlite3'
 - SSH_KEY_PATH: 项目SSH密钥存储地址,默认'tmp/.ssh'
-- RAILS_SERVE_STATIC_FILES: 是否服务静态文件,默认'false'
-- PORT: 使用galle start启动时的端口号,默认'8080'
+- RAILS_SERVE_STATIC_FILES: 是否服务静态文件,默认'true'
+- PORT: 使用galle start启动时的端口号,默认'80'
 
 ### docker
 首先安装docker和docker-compose，以ubuntu为例:
@@ -45,7 +45,7 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-compose
 ~~~  
-编辑项目中docker-compose.yml的ports改为需要安装的端口，默认10080
+编辑项目中docker-compose.yml的ports"80:80"前一个80改为需要安装的端口，默认80
 ~~~
 cd galle
 docker-compose build
