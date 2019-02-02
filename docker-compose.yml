@@ -2,10 +2,9 @@ version: "3"
 services:
 
   web:
-    build: .
-    command: ./galle start-docker
+    build: liubaicai/galle
     volumes:
-      - .:/galle
+      - .:/galledata
     ports:
       - "80:80"
     restart: always
