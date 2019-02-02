@@ -1,4 +1,6 @@
-FROM liubaicai/ruby2.6.0:base
+FROM ruby:2.6.0-alpine3.8
+
+MAINTAINER liubaicai "liushuai.baicai@hotmail.com"
 
 WORKDIR /galle
 
@@ -6,7 +8,10 @@ COPY . /galle
 
 RUN mkdir /galledata
 
-RUN bundle install --without development test
+RUN apk add --no-cache alpine-sdk\
+    sqlite-dev bash curl tzdata git openssh-client &&\
+    bundle install --without development test &&\
+    apk del alpine-sdk
 
 ENV RAILS_SERVE_STATIC_FILES=true PORT=80 SQLITE3=/galledata/db/db.sqlite3 SSH_KEY_PATH=/galledata/ssh
 
