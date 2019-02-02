@@ -1,0 +1,13 @@
+FROM liubaicai/ruby2.6.0:base
+
+WORKDIR /galle
+
+COPY . /galle
+
+RUN mkdir /galledata
+
+RUN bundle install --without development test
+
+ENV RAILS_SERVE_STATIC_FILES=true PORT=80 SQLITE3=/galledata/db/db.sqlite3 SSH_KEY_PATH=/galledata/.ssh
+
+CMD ["bash", "galle", "start-docker"]
