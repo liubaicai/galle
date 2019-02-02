@@ -39,7 +39,7 @@
             <% @logs.each do |log| %>
                 <li class="list-group-item">
                     <span class="text-primary"><%= log.user.username unless log.user.nil? %></span>
-                    @<span class="text-muted"><%= log.created_at.getlocal %></span>:
+                    @<span class="text-muted"><%= log.created_at %></span>:
                     <span class="text-danger"><%= log.job %></span>-
                     <span class="text-muted"><%= log.target %></span>
                 </li>
