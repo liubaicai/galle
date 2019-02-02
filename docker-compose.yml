@@ -2,7 +2,7 @@ version: "3"
 services:
 
   web:
-    build: liubaicai/galle
+    image: liubaicai/galle
     volumes:
       - .:/galledata
     ports:
