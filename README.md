@@ -45,10 +45,18 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-compose
 ~~~  
-编辑项目中docker-compose.yml的ports"80:80"前一个80改为需要安装的端口，默认80
+第一种方式: 编辑项目中docker-compose.yml的ports"80:80"前一个80改为需要安装的端口，默认80
 ~~~
 cd galle
 docker-compose build
+docker-compsoe up #直接启动
+docker-compsoe up -d #后台启动
+~~~
+第二种方式: 无需clone项目
+~~~
+mkdir galle
+cd galle
+curl -Lo docker-compose.yml https://git.io/fhSqU
 docker-compsoe up #直接启动
 docker-compsoe up -d #后台启动
 ~~~
