@@ -56,7 +56,10 @@
     <label><span class="text-danger">(必填)</span>要部署到的目标服务器，多选</label>
     <select id='publisher_servers' name='publisher_servers[]' multiple='multiple' size='10' class="form-control">
       <% @servers.each do |server| %>
-        <option value="<%= server.id %>"><%= server.address %>:<%= server.port %></option>
+        <option value="<%= server.id %>">
+            <% if server.env_level==0 %>[生产]<% else %>[测试]<% end %>
+            <%= server.address %>:<%= server.port %>
+        </option>
       <% end %>
     </select>
   </div>

@@ -42,7 +42,7 @@ class ServersController < ApplicationController
 
     private
     def server_params
-        params.require(:server).permit(:address, :port, :username, :password, :monitor_path)
+        params.require(:server).permit(:address, :port, :username, :password, :monitor_path, :env_level)
     end
 
 end

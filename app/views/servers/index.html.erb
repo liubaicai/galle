@@ -25,7 +25,12 @@
   <% @servers.each do |server| %>
     <tr>
       <th scope="row"><%= server.id %></th>
-      <td><%= server.address %></td>
+      <td><% if server.env_level==0 %>
+              <span class="text-danger">[生产]</span>
+          <% else %>
+              <span class="text-muted">[测试]</span>
+          <% end %>
+          <%= server.address %></td>
       <td><%= server.port %></td>
       <td>
         <button type="button" class="btn btn-success" onclick="CheckServer(<%= server.id %>)">测试连接</button>

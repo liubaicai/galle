@@ -1,33 +1,39 @@
-
 <% content_for :servers_slide_active do %>
-  active
+    active
 <% end %>
 
 <%= form_for @server, url: {action: "create"} do |f| %>
-  <div class="form-group">
-    <label>地址</label>
-    <%= f.text_field :address, type: "text", class: "form-control", placeholder: "服务器域名或IP地址" %>
-  </div>
-  <div class="form-group">
-    <label>SSH端口</label>
-    <%= f.text_field :port, type: "text", class: "form-control", placeholder: "SSH端口号", value: "22" %>
-  </div>
-  <div class="form-group">
-    <label>用户名</label>
-    <%= f.text_field :username, type: "text", class: "form-control", placeholder: "用户名" %>
-  </div>
-  <div class="form-group">
-    <label>环境变量文件路径，如'~/.zshrc', 默认为'~/.bashrc'</label>
-    <%= f.text_field :rc_file_path, type: "text", class: "form-control", placeholder: "环境变量文件，如'~/.zshrc'" %>
-  </div>
-  <div class="hidden form-group">
-    <label>密码</label>
-    <%= f.text_field :password, type: "text", class: "form-control", placeholder: "密码" %>
-  </div>
-  <div class="form-group">
-    <label>探测路径，用以检测服务器连接</label>
-    <%= f.text_field :monitor_path, type: "text", class: "form-control", placeholder: "服务器探测路径，如：~/.galle", value: "~/.galle" %>
-  </div>
-  <%= f.submit "新建", class: "btn btn-primary" %>
-  <%= link_to '取消', servers_path, type: "button", class: "btn btn-default" %>
+    <div class="form-group">
+        <label>地址</label>
+        <%= f.text_field :address, type: "text", class: "form-control", placeholder: "服务器域名或IP地址" %>
+    </div>
+    <div class="form-group">
+        <label>SSH端口</label>
+        <%= f.text_field :port, type: "text", class: "form-control", placeholder: "SSH端口号", value: "22" %>
+    </div>
+    <div class="form-group">
+        <label>用户名</label>
+        <%= f.text_field :username, type: "text", class: "form-control", placeholder: "用户名" %>
+    </div>
+    <div class="form-group">
+        <label>环境变量文件路径，如'~/.zshrc', 默认为'~/.bashrc'</label>
+        <%= f.text_field :rc_file_path, type: "text", class: "form-control", placeholder: "环境变量文件，如'~/.zshrc'" %>
+    </div>
+    <div class="hidden form-group">
+        <label>密码</label>
+        <%= f.text_field :password, type: "text", class: "form-control", placeholder: "密码" %>
+    </div>
+    <div class="form-group">
+        <label>探测路径，用以检测服务器连接</label>
+        <%= f.text_field :monitor_path, type: "text", class: "form-control", placeholder: "服务器探测路径，如：~/.galle", value: "~/.galle" %>
+    </div>
+    <div class="form-group">
+        <label>运行环境</label><br>
+        <%= f.label :env_level, "测试/开发", :value => "1", class: "radio-inline" %>
+        <%= f.radio_button :env_level, 1, :checked => true %>
+        <%= f.label :env_level, "生产", :value => "0", class: "radio-inline" %>
+        <%= f.radio_button :env_level, 0 %>
+    </div>
+    <%= f.submit "新建", class: "btn btn-primary" %>
+    <%= link_to '取消', servers_path, type: "button", class: "btn btn-default" %>
 <% end %>

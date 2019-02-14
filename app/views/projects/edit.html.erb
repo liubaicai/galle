@@ -56,7 +56,10 @@
         <select id='publisher_servers' name='publisher_servers[]' multiple='multiple' size='10' class="form-control">
             <% @servers.each do |server| %>
                 <% if check_is_in_project_servers(server, @project.publisher_servers) %>
-                    <option selected value="<%= server.id %>"><%= server.address %>:<%= server.port %></option>
+                    <option selected value="<%= server.id %>">
+                        <% if server.env_level==0 %>[生产]<% else %>[测试]<% end %>
+                        <%= server.address %>:<%= server.port %>
+                    </option>
                 <% else %>
                     <option value="<%= server.id %>"><%= server.address %>:<%= server.port %></option>
                 <% end %>
