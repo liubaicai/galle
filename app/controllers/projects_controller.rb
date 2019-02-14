@@ -10,7 +10,7 @@ class ProjectsController < ApplicationController
 
     def new
         @project = Project.new
-        @servers = Server.all
+        @servers = Server.where(:env_level => 1)
     end
 
     def create
@@ -34,7 +34,7 @@ class ProjectsController < ApplicationController
 
     def edit
         @project = Project.find(params[:id])
-        @servers = Server.all
+        @servers = Server.where(:env_level => @project.env_level)
     end
 
     def update
@@ -69,6 +69,7 @@ class ProjectsController < ApplicationController
     def copy
         project = Project.find(params[:id])
         new_project = project.dup
+        new_project.env_level = 0
         new_project.save
         redirect_to projects_path
     end

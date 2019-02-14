@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_14_142355) do
+ActiveRecord::Schema.define(version: 2019_02_14_151330) do
 
   create_table "logs", force: :cascade do |t|
     t.string "job"
@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 2019_02_14_142355) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "file_included"
-    t.integer "env_level"
+    t.integer "env_level", default: 1
   end
 
   create_table "publisher_servers", force: :cascade do |t|
@@ -77,7 +77,7 @@ ActiveRecord::Schema.define(version: 2019_02_14_142355) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "rc_file_path"
-    t.integer "env_level"
+    t.integer "env_level", default: 1
   end
 
   create_table "users", force: :cascade do |t|
