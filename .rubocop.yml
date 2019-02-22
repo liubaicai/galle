@@ -1,0 +1,17 @@
+AllCops:
+  Exclude:
+    - 'sbin/*'
+    - 'bin/*'
+    - 'db/migrate/*'
+    - 'db/seeds.rb'
+    - 'db/schema.rb'
+    - 'vendor/bundle/**/*'
+
+Rails:
+  Enabled: true
+
+Metrics/LineLength:
+  Max: 120
+
+Style/AsciiComments:
+  Enabled: false
