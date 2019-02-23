@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -29,7 +31,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :memory_store
   config.public_file_server.headers = {
-      'Cache-Control' => "public, max-age=#{2.days.to_i}"
+    'Cache-Control' => "public, max-age=#{2.days.to_i}"
   }
 
   # Store uploaded files on the local file system (see config/storage.yml for options)

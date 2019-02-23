@@ -1,10 +1,10 @@
+# frozen_string_literal: true
+
+# help
 module ApplicationHelper
+  def dev?
+    return false if Rails.env.production?
 
-    def isDev
-        if Rails.env=='production'
-            return false
-        end
-        return true
-    end
-
+    true
+  end
 end
