@@ -17,26 +17,26 @@ class UsersController < ApplicationController
   def create
     if @current_user.level < 100
       redirect_to root_path
+      return
+    end
+    username = params[:username]
+    password = params[:password]
+    if username == '' || password == ''
+      @error = '用户名或密码不能为空'
+      render 'new'
     else
-      username = params[:username]
-      password = params[:password]
-      if username == '' || password == ''
-        @error = '用户名或密码不能为空'
-        render 'new'
+      usr = User.find_by(username: username)
+      if usr.nil?
+        usr = User.new
+        usr.username = username
+        usr.password_digest = Digest::MD5.hexdigest(Digest::MD5.hexdigest(password))
+        usr.level = 1
+        usr.save
+        Log.create_log(@current_user.id, 'CreateUser', usr.username.to_s)
+        redirect_to users_path
       else
-        usr = User.find_by(username: username)
-        if usr.nil?
-          usr = User.new
-          usr.username = username
-          usr.password_digest = Digest::MD5.hexdigest(Digest::MD5.hexdigest(password))
-          usr.level = 1
-          usr.save
-          Log.create_log(@current_user.id, 'CreateUser', usr.username.to_s)
-          redirect_to users_path
-        else
-          @error = '该用户已经存在'
-          render 'new'
-        end
+        @error = '该用户已经存在'
+        render 'new'
       end
     end
   end

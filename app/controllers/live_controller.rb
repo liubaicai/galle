@@ -67,52 +67,7 @@ class LiveController < ApplicationController
     FileUtils.cd(local_store_path)
 
     begin
-      response.live_push '执行检出前置任务 ...'
-      project.task_pre_checkout.split(';').each do |command|
-        do_shell(command)
-      end
-
-      if Dir.exist?('.git')
-        git = Git.open('.')
-        if project.git_url == git.remotes.first.url
-
-          response.live_push '更新本地代码 ...'
-          git.fetch
-          git.reset_hard
-          git.clean(force: true, d: true)
-          git.pull
-
-        else
-
-          response.live_push '删除旧仓库 ...'
-
-          FileUtils.cd('..')
-          FileUtils.rm_rf(local_store_path)
-          FileUtils.mkdir_p(local_store_path)
-          FileUtils.cd(local_store_path)
-
-          response.live_push '克隆代码库 ...'
-          git = Git.clone(project.git_url, '.')
-
-        end
-
-      else
-
-        response.live_push '克隆代码库 ...'
-        git = Git.clone(project.git_url, '.')
-
-      end
-
-      response.live_push "检出'#{project.git_version}'版本 ..."
-      git.checkout project.git_version
-
-      do_shell 'git submodule init;git submodule update'
-
-      response.live_push '执行检出后置任务 ...'
-      project.task_post_checkout.split(';').each do |command|
-        do_shell(command)
-      end
-
+      do_checkout_project(project, response)
       response.live_push '检出完成'
     rescue StandardError => exception
       response.live_error exception
@@ -155,108 +110,17 @@ class LiveController < ApplicationController
       FileUtils.mkdir_p(local_store_path)
       FileUtils.cd(local_store_path)
 
-      response.live_push '执行检出前置任务 ...'
-      project.task_pre_checkout.split(';').each do |command|
-        do_shell(command)
-      end
-
-      if Dir.exist?('.git')
-        git = Git.open('.')
-        if project.git_url == git.remotes.first.url
-
-          response.live_push '更新本地代码 ...'
-          git.fetch
-          git.reset_hard
-          git.clean(force: true, d: true)
-          git.pull
-
-        else
-
-          response.live_push '删除旧仓库 ...'
-
-          FileUtils.cd('..')
-          FileUtils.rm_rf(local_store_path)
-          FileUtils.mkdir_p(local_store_path)
-          FileUtils.cd(local_store_path)
-
-          response.live_push '克隆代码库 ...'
-          git = Git.clone(project.git_url, '.')
-
-        end
-      else
-
-        response.live_push '克隆代码库 ...'
-        git = Git.clone(project.git_url, '.')
-
-      end
-
-      response.live_push "检出'#{project.git_version}'版本 ..."
-      git.checkout project.git_version
-
-      do_shell 'git submodule init;git submodule update'
-
-      response.live_push '执行检出后置任务 ...'
-      project.task_post_checkout.split(';').each do |command|
-        do_shell(command)
-      end
+      do_checkout_project(project, response)
 
       response.live_push '代码检出完成 ...'
 
       response.live_push '准备文件 ...'
       tmp_store_path = "#{local_store_path}.tmp"
-      FileUtils.rm_rf(tmp_store_path) if Dir.exist?(tmp_store_path)
-      FileUtils.mkdir_p(tmp_store_path)
-
-      if project.file_included.nil? || project.file_included == ''
-        excs = project.file_excludable.split(';')
-        Find.find(local_store_path) do |path|
-          next if path == local_store_path
-
-          real_path = path.gsub(local_store_path, '')
-          is_mv = true
-          excs.each do |exc|
-            is_mv = false if real_path.start_with? "/#{exc}"
-          end
-          is_mv = false if real_path.start_with? '/.git'
-          if File.directory?(path) && is_mv
-            FileUtils.mkdir_p("#{tmp_store_path}#{real_path}")
-          elsif is_mv
-            FileUtils.cp_r(path, "#{tmp_store_path}#{real_path}")
-          end
-        end
-      else
-        includes = project.file_included.split(';')
-        Find.find(local_store_path) do |path|
-          next if path == local_store_path
-
-          real_path = path.gsub(local_store_path, '')
-          is_mv = false
-          includes.each do |exc|
-            is_mv = true if real_path.start_with? "/#{exc}"
-          end
-          if File.directory?(path) && is_mv
-            FileUtils.mkdir_p("#{tmp_store_path}#{real_path}")
-          elsif is_mv
-            FileUtils.cp_r(path, "#{tmp_store_path}#{real_path}")
-          end
-        end
-      end
+      do_add_del_file(project, tmp_store_path, local_store_path)
 
       response.live_push '写入附加文件 ...'
       FileUtils.cd(tmp_store_path)
-      project_extend_files = project.project_extend_files
-      project_extend_files.each do |project_extend_file|
-        tname = project_extend_file.filename
-        tarr = tname.split('/')
-        if tarr.size > 1
-          tarr.delete_at(tarr.size - 1)
-          project_extend_file_path = tarr.join('/')
-          FileUtils.mkdir_p(project_extend_file_path)
-        end
-        a_file = File.new(project_extend_file.filename, 'w+')
-        a_file.syswrite(project_extend_file.content)
-        a_file.close
-      end
+      write_extend_file(project, tmp_store_path)
 
       response.live_push '文件准备完成 ...'
       response.live_push '共发布到' + project.publisher_servers.size.to_s + '台服务器 ...'
@@ -282,45 +146,14 @@ class LiveController < ApplicationController
                                                          keys: [ssh_path.to_s], timeout: 10, non_interactive: true,
                                                          config: false, user_known_hosts_file: []) do |sftp|
 
-          response.live_push '执行部署前置任务 ...'
-          unless project.task_pre_deploy.nil? || project.task_pre_deploy == ''
-            project.task_pre_deploy.split(';').each do |command|
-              command_str = "source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}"
-              sftp.session.exec!(command_str) do |_channel, _stream, data|
-                response.live_push data
-              end
-            end
-          end
+          publish_to_server_pre(project, response, sftp, server)
 
-          response.live_push '准备备份文件 ...'
-          current_backup = "#{project.target_backup_path}/#{publisher.id}"
-          sftp.session.exec!("mkdir -p #{current_backup}")
-          backups = project.publisher_ids.max(5)
-          sftp.dir.foreach(project.target_backup_path) do |entry|
-            if entry.name != '.' && entry.name != '..'
-              is_del = true
-              backups.each do |id|
-                is_del = false if entry.name == id.to_s
-              end
-              sftp.session.exec!("rm -rf #{project.target_backup_path}/#{entry.name}") if is_del
-            end
-          end
-          sftp.session.exec!("mkdir -p #{current_backup}")
-          sftp.session.exec!("rm -rf #{project.target_deploy_path}")
-          sftp.session.exec!("ln -sf #{current_backup} #{project.target_deploy_path}")
+          publish_to_server_backup(project, response, sftp, publisher)
 
           response.live_push '正在发布文件 ...'
           sftp.upload!(tmp_store_path, project.target_deploy_path)
 
-          response.live_push '执行部署后置任务 ...'
-          unless project.task_post_deploy.nil? || project.task_post_deploy == ''
-            project.task_post_deploy.split(';').each do |command|
-              command_str = "source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}"
-              sftp.session.exec!(command_str) do |_channel, _stream, data|
-                response.live_push data
-              end
-            end
-          end
+          publish_to_server_post(project, response, sftp, server)
         end
       end
 
@@ -374,5 +207,152 @@ class LiveController < ApplicationController
         Rails.logger.info line
       end
     end
+  end
+
+  def do_checkout_project(project, response)
+    response.live_push '执行检出前置任务 ...'
+    project.task_pre_checkout.split(';').each do |command|
+      do_shell(command)
+    end
+
+    if Dir.exist?('.git')
+      git = Git.open('.')
+      if project.git_url == git.remotes.first.url
+
+        response.live_push '更新本地代码 ...'
+        git.fetch
+        git.reset_hard
+        git.clean(force: true, d: true)
+        git.pull
+
+      else
+
+        response.live_push '删除旧仓库 ...'
+
+        FileUtils.cd('..')
+        FileUtils.rm_rf(local_store_path)
+        FileUtils.mkdir_p(local_store_path)
+        FileUtils.cd(local_store_path)
+
+        response.live_push '克隆代码库 ...'
+        git = Git.clone(project.git_url, '.')
+
+      end
+
+    else
+
+      response.live_push '克隆代码库 ...'
+      git = Git.clone(project.git_url, '.')
+
+    end
+
+    response.live_push "检出'#{project.git_version}'版本 ..."
+    git.checkout project.git_version
+
+    do_shell 'git submodule init;git submodule update'
+
+    response.live_push '执行检出后置任务 ...'
+    project.task_post_checkout.split(';').each do |command|
+      do_shell(command)
+    end
+  end
+
+  def do_add_del_file(project, tmp_store_path, local_store_path)
+    FileUtils.rm_rf(tmp_store_path) if Dir.exist?(tmp_store_path)
+    FileUtils.mkdir_p(tmp_store_path)
+
+    if project.file_included.nil? || project.file_included == ''
+      excs = project.file_excludable.split(';')
+      Find.find(local_store_path) do |path|
+        next if path == local_store_path
+
+        real_path = path.gsub(local_store_path, '')
+        is_mv = true
+        excs.each do |exc|
+          is_mv = false if real_path.start_with? "/#{exc}"
+        end
+        is_mv = false if real_path.start_with? '/.git'
+        if File.directory?(path) && is_mv
+          FileUtils.mkdir_p("#{tmp_store_path}#{real_path}")
+        elsif is_mv
+          FileUtils.cp_r(path, "#{tmp_store_path}#{real_path}")
+        end
+      end
+    else
+      includes = project.file_included.split(';')
+      Find.find(local_store_path) do |path|
+        next if path == local_store_path
+
+        real_path = path.gsub(local_store_path, '')
+        is_mv = false
+        includes.each do |exc|
+          is_mv = true if real_path.start_with? "/#{exc}"
+        end
+        if File.directory?(path) && is_mv
+          FileUtils.mkdir_p("#{tmp_store_path}#{real_path}")
+        elsif is_mv
+          FileUtils.cp_r(path, "#{tmp_store_path}#{real_path}")
+        end
+      end
+    end
+  end
+
+  def write_extend_file(project, tmp_store_path)
+    FileUtils.cd(tmp_store_path)
+    project_extend_files = project.project_extend_files
+    project_extend_files.each do |project_extend_file|
+      tname = project_extend_file.filename
+      tarr = tname.split('/')
+      if tarr.size > 1
+        tarr.delete_at(tarr.size - 1)
+        project_extend_file_path = tarr.join('/')
+        FileUtils.mkdir_p(project_extend_file_path)
+      end
+      a_file = File.new(project_extend_file.filename, 'w+')
+      a_file.syswrite(project_extend_file.content)
+      a_file.close
+    end
+  end
+
+  def publish_to_server_pre(project, response, sftp, server)
+    response.live_push '执行部署前置任务 ...'
+
+    project.task_pre_deploy.split(';').each do |command|
+      command_str = "source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}"
+      sftp.session.exec!(command_str) do |_channel, _stream, data|
+        response.live_push data
+      end
+    end
+  end
+
+  def publish_to_server_post(project, response, sftp, server)
+    response.live_push '执行部署后置任务 ...'
+    return if project.task_post_deploy.nil? || project.task_post_deploy == ''
+
+    project.task_post_deploy.split(';').each do |command|
+      command_str = "source #{server.rc_file_path};cd #{project.target_deploy_path};#{command}"
+      sftp.session.exec!(command_str) do |_channel, _stream, data|
+        response.live_push data
+      end
+    end
+  end
+
+  def publish_to_server_backup(project, response, sftp, publisher)
+    response.live_push '准备备份文件 ...'
+    current_backup = "#{project.target_backup_path}/#{publisher.id}"
+    sftp.session.exec!("mkdir -p #{current_backup}")
+    backups = project.publisher_ids.max(5)
+    sftp.dir.foreach(project.target_backup_path) do |entry|
+      if entry.name != '.' && entry.name != '..'
+        is_del = true
+        backups.each do |id|
+          is_del = false if entry.name == id.to_s
+        end
+        sftp.session.exec!("rm -rf #{project.target_backup_path}/#{entry.name}") if is_del
+      end
+    end
+    sftp.session.exec!("mkdir -p #{current_backup}")
+    sftp.session.exec!("rm -rf #{project.target_deploy_path}")
+    sftp.session.exec!("ln -sf #{current_backup} #{project.target_deploy_path}")
   end
 end
