@@ -86,20 +86,9 @@ class LiveController < ApplicationController
 
     publisher_id = params[:id]
     publisher = Publisher.find(publisher_id)
-
-    if publisher.published
-      response.live_push '该发布已经完成'
-      response.live_close
-      return
-    end
-
     project = publisher.project
 
-    if Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
-      response.live_push '等待其他任务完成 ...'
-      response.live_close
-      return
-    end
+    return unless check_publisher_status(publisher, project, response)
 
     Rails.cache.write('local_shell_running', true)
 
@@ -255,6 +244,23 @@ class LiveController < ApplicationController
     project.task_post_checkout.split(';').each do |command|
       do_shell(command)
     end
+  end
+
+  def check_publisher_status(publisher, project, response)
+    if publisher.published
+      response.live_push '该发布已经完成'
+      response.live_close
+      false
+    elsif @current_user.level <= 100 && project.env_level.zero?
+      response.live_push '你没有权限'
+      response.live_close
+      false
+    elsif Rails.cache.exist?('local_shell_running') && Rails.cache.read('local_shell_running')
+      response.live_push '等待其他任务完成 ...'
+      response.live_close
+      false
+    end
+    true
   end
 
   def do_add_del_file(project, tmp_store_path, local_store_path)

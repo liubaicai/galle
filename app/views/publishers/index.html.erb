@@ -48,7 +48,7 @@
             </td>
             <td>
                 <%= link_to '删除', publisher_path(publisher), method: :delete, data: {confirm: 'Are you sure?'}, type: "button", class: "btn btn-danger" %>
-                <% unless publisher.project.nil? %>
+                <% unless publisher.project.nil? || (@current_user.level <= 100 && publisher.project.env_level == 0) %>
                     <button type="button" class="btn btn-primary" onclick="toPublish(<%= publisher.id %>)">发布</button>
                 <% end %>
             </td>
