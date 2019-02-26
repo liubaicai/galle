@@ -268,21 +268,13 @@ class LiveController < ApplicationController
     FileUtils.mkdir_p(tmp_store_path)
 
     if project.file_included.nil? || project.file_included == ''
-      excs = project.file_excludable.split(';')
+      excludes = project.file_excludable.split(';')
       Find.find(local_store_path) do |path|
         next if path == local_store_path
 
         real_path = path.gsub(local_store_path, '')
-        is_mv = true
-        excs.each do |exc|
-          is_mv = false if real_path.start_with? "/#{exc}"
-        end
-        is_mv = false if real_path.start_with? '/.git'
-        if File.directory?(path) && is_mv
-          FileUtils.mkdir_p("#{tmp_store_path}#{real_path}")
-        elsif is_mv
-          FileUtils.cp_r(path, "#{tmp_store_path}#{real_path}")
-        end
+        is_mv = do_add_del_file_check_excludable(excludes, real_path)
+        do_add_del_file_mv(path, is_mv, "#{tmp_store_path}#{real_path}")
       end
     else
       includes = project.file_included.split(';')
@@ -290,16 +282,34 @@ class LiveController < ApplicationController
         next if path == local_store_path
 
         real_path = path.gsub(local_store_path, '')
-        is_mv = false
-        includes.each do |exc|
-          is_mv = true if real_path.start_with? "/#{exc}"
-        end
-        if File.directory?(path) && is_mv
-          FileUtils.mkdir_p("#{tmp_store_path}#{real_path}")
-        elsif is_mv
-          FileUtils.cp_r(path, "#{tmp_store_path}#{real_path}")
-        end
+        is_mv = do_add_del_file_check_included(includes, real_path)
+        do_add_del_file_mv(path, is_mv, "#{tmp_store_path}#{real_path}")
       end
+    end
+  end
+
+  def do_add_del_file_check_excludable(files, real_path)
+    is_mv = true
+    files.each do |file|
+      is_mv = false if real_path.start_with? "/#{file}"
+    end
+    is_mv = false if real_path.start_with? '/.git'
+    is_mv
+  end
+
+  def do_add_del_file_check_included(files, real_path)
+    is_mv = false
+    files.each do |file|
+      is_mv = true if real_path.start_with? "/#{file}"
+    end
+    is_mv
+  end
+
+  def do_add_del_file_mv(path, is_mv, new_path)
+    if File.directory?(path) && is_mv
+      FileUtils.mkdir_p(new_path)
+    elsif is_mv
+      FileUtils.cp_r(path, new_path)
     end
   end
 
